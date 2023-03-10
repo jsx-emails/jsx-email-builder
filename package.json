@@ -1,0 +1,45 @@
+{
+  "name": "jsx-email-builder",
+  "version": "1.0.0",
+  "description": "A jsx email template builder. Supper easy and fast.",
+  "type": "module",
+  "scripts": {
+    "start": "node engine/server.js",
+    "build": "node engine/build.js"
+  },
+  "devDependencies": {
+    "@swc/cli": "^0.1.62",
+    "@swc/core": "^1.3.37",
+    "@types/react": "^18.0.28",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "eslint": "^8.35.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "express": "^4.18.2",
+    "html-escaper": "^3.0.3",
+    "jsdom": "^21.1.0",
+    "prettier": "^2.8.6",
+    "swc-loader": "^0.2.3",
+    "uuid": "^9.0.0",
+    "webpack": "^5.76.1",
+    "ws": "^8.13.0"
+  },
+  "keywords": [
+    "jsx email builder",
+    "modern email builder",
+    "email template builder",
+    "react email templates"
+  ],
+  "author": "Iman Mahmoudinasab",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "i18next": "^22.4.11"
+  },
+  "resolve": {
+    "extensions": [
+      ".js"
+    ]
+  }
+}
