@@ -1,6 +1,6 @@
 {
   "name": "jsx-email-builder",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A jsx email template builder. Supper easy and fast.",
   "type": "module",
   "scripts": {
@@ -8,7 +8,7 @@
     "build": "node engine/cli.js build"
   },
   "bin": {
-    "jsx-email-builder": "engine/cli.js"
+    "jsx-email-builder": "./engine/cli.js"
   },
   "devDependencies": {
     "@swc/cli": "^0.1.62",
