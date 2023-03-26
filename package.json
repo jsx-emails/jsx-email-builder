@@ -10,27 +10,6 @@
   "bin": {
     "jsx-email-builder": "./engine/cli.js"
   },
-  "devDependencies": {
-    "@swc/cli": "^0.1.62",
-    "@swc/core": "^1.3.37",
-    "@types/react": "^18.0.28",
-    "@typescript-eslint/eslint-plugin": "^5.54.1",
-    "@typescript-eslint/parser": "^5.54.1",
-    "eslint": "^8.35.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-config-prettier": "^8.8.0",
-    "eslint-plugin-prettier": "^4.2.1",
-    "express": "^4.18.2",
-    "fs-extra": "^11.1.1",
-    "html-escaper": "^3.0.3",
-    "jsdom": "^21.1.0",
-    "minimist": "^1.2.8",
-    "prettier": "^2.8.6",
-    "swc-loader": "^0.2.3",
-    "uuid": "^9.0.0",
-    "webpack": "^5.76.1",
-    "ws": "^8.13.0"
-  },
   "keywords": [
     "jsx email builder",
     "modern email builder",
@@ -40,7 +19,28 @@
   "author": "Iman Mahmoudinasab",
   "license": "GPL-3.0",
   "dependencies": {
-    "i18next": "^22.4.11"
+    "@swc/cli": "^0.1.62",
+    "@swc/core": "^1.3.37",
+    "express": "^4.18.2",
+    "fs-extra": "^11.1.1",
+    "html-escaper": "^3.0.3",
+    "i18next": "^22.4.11",
+    "jsdom": "^21.1.0",
+    "minimist": "^1.2.8",
+    "swc-loader": "^0.2.3",
+    "uuid": "^9.0.0",
+    "webpack": "^5.76.1",
+    "ws": "^8.13.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.28",
+    "@typescript-eslint/eslint-plugin": "^5.54.1",
+    "@typescript-eslint/parser": "^5.54.1",
+    "eslint": "^8.35.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.8.6"
   },
   "resolve": {
     "extensions": [
