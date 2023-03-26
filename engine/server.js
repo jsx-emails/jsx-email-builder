@@ -12,32 +12,34 @@ import {
 import { watchForChanges } from "./watcher.js";
 import { exceptionToHtml } from "./exception-to-html.js";
 
-const app = express();
-const port = 3000;
+async function startServer(params) {
+  const app = express();
+  const port = params.port || 3000;
 
-const httpServer = registerSocket({ express: app });
+  const httpServer = registerSocket({ express: app });
 
-const routes = await registerRoutes(
-  {
-    templatesDir: "./email-templates",
+  const routes = await registerRoutes(
+    {
+      templatesDir: "./email-templates",
+      httpServer: app,
+    },
+    handleRequest
+  );
+
+  registerHomeRoute({
     httpServer: app,
-  },
-  handleRequest
-);
+    routes,
+  });
 
-registerHomeRoute({
-  httpServer: app,
-  routes,
-});
+  watchForChanges({
+    callback: (_type, file) => sendMessage("change", { file }),
+    path: "./email-templates",
+  });
 
-watchForChanges({
-  callback: (_type, file) => sendMessage("change", { file }),
-  path: "./email-templates",
-});
-
-httpServer.listen(port, () => {
-  console.log(`Email templates are served on port ${port}`);
-});
+  httpServer.listen(port, () => {
+    console.log(`Email templates are served on port ${port}`);
+  });
+}
 
 async function handleRequest(context) {
   const { req, res } = context;
@@ -64,3 +66,5 @@ async function handleRequest(context) {
     res.status(500).send(html);
   }
 }
+
+export default startServer;
