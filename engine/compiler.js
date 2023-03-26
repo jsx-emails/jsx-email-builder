@@ -1,9 +1,12 @@
 import fs from "fs";
 import path from "path";
 import webpack from "webpack";
+import { v4 as uuid } from "uuid";
+import url from "url";
 import getWebpackConfig from "./webpack-configs.js";
 import { setupJsxFactory } from "./jsx-factory.js";
-import { v4 as uuid } from "uuid";
+
+const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
 /**
  * @param {Object} options
@@ -45,10 +48,7 @@ function createTempDir() {
 
 function createEntryFile(templatePath) {
   try {
-    const entryFileTemplate = path.join(
-      process.cwd(),
-      "./engine/entry.js.template"
-    );
+    const entryFileTemplate = path.join(currentDir, "entry.js.template");
     const entryFile = path.join(
       process.cwd(),
       "./dist/.temp/entry." + uuid() + ".js"
