@@ -60,7 +60,7 @@ export function initializeNewProject(params) {
   fs.copySync(typesPath, targetTypesPath);
 
   // Copy .gitignore
-  const gitignorePath = path.join(projectTemplateDir, ".gitignore");
+  const gitignorePath = path.join(projectTemplateDir, ".gitignore.template");
   const targetGitignorePath = path.join(targetRootDir, ".gitignore");
   fs.copySync(gitignorePath, targetGitignorePath);
 
