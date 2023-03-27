@@ -75,7 +75,7 @@ function createChildren(element, children) {
         if (Array.isArray(child)) {
           createChildren(element, child);
         } else if (typeof child === "string") {
-          element.appendChild(document.createTextNode(child));
+          element.appendChild(document.createTextNode(global.trans(child)));
         } else if (child === null || child === undefined) {
           // do nothing
         } else if (typeof child === "function") {
@@ -85,8 +85,13 @@ function createChildren(element, children) {
           // element.appendChild(returnedElement);
         } else if (child instanceof JsxObject) {
           element.innerHTML = child.input.__html;
-        } else {
+        } else if (child instanceof window.Node) {
           element.appendChild(child);
+        } else if (child instanceof Object) {
+          element.innerHTML = global.trans(
+            child.trans?.text,
+            child.trans.options
+          );
         }
       });
     } else if (typeof children === "string") {

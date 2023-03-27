@@ -9,9 +9,10 @@ const config = {
     ecmaVersion: "latest",
     sourceType: "module",
   },
-  plugins: ["prettier"],
+  plugins: ["jsdoc", "prettier"],
   rules: {
     "prettier/prettier": ["error"],
+    "jsdoc/no-undefined-types": ["error"],
     quotes: ["error", "double"],
     semi: ["error", "always"],
   },

@@ -5,10 +5,12 @@ import { compile, cleanup } from "./compiler.js";
 
 async function build(params) {
   const templatesDir = params.templatesDir || "./email-templates";
+  const templatesPostFix = params.templatesPostFix || ".template.tsx";
 
   // 1. get all the templates
   const templates = getEmailTemplatesList({
     templatesDir,
+    templatesPostFix,
   });
 
   // 2. compile them in 8 parallel threads
@@ -35,7 +37,7 @@ async function build(params) {
     if (!fs.existsSync(distDir)) {
       fs.mkdirSync(distDir, { recursive: true });
     }
-    const htmlRelativePath = templatePath.replace(".template.tsx", ".html");
+    const htmlRelativePath = templatePath.replace(templatesPostFix, ".html");
     const htmlAbsolutePath = path.join(
       process.cwd(),
       `./dist/${htmlRelativePath}`

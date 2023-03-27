@@ -15,12 +15,15 @@ import { exceptionToHtml } from "./exception-to-html.js";
 async function startServer(params) {
   const app = express();
   const port = params.port || 3000;
+  const templatesDir = params.templatesDir || "./email-templates";
+  const templatesPostFix = params.templatesPostFix || ".template.tsx";
 
   const httpServer = registerSocket({ express: app });
 
   const routes = await registerRoutes(
     {
-      templatesDir: "./email-templates",
+      templatesDir,
+      templatesPostFix,
       httpServer: app,
     },
     handleRequest
@@ -33,7 +36,7 @@ async function startServer(params) {
 
   watchForChanges({
     callback: (_type, file) => sendMessage("change", { file }),
-    path: "./email-templates",
+    path: templatesDir,
   });
 
   httpServer.listen(port, () => {
@@ -41,10 +44,18 @@ async function startServer(params) {
   });
 }
 
+/**
+ * @param {{ req: express.Request; res: express.Response; templatesDir: string; templatesPostFix: string; }} context
+ */
 async function handleRequest(context) {
-  const { req, res } = context;
+  const { req, res, templatesDir, templatesPostFix } = context;
   try {
-    const templateRelativePath = mapRouteToTemplate({ req });
+    const templateRelativePath = mapRouteToTemplate({
+      req,
+      templatesDir,
+      templatesPostFix,
+    });
+    console.log("🤖 :: templateRelativePath:", templateRelativePath);
     const templatePath = path.join(process.cwd(), templateRelativePath);
 
     if (!fs.existsSync(templatePath)) {

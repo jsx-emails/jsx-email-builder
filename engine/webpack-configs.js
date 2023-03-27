@@ -1,12 +1,15 @@
-import path from "path";
-
 /**
- * @param {string} entry
- * @param {string=} outputFilename
- * @param {boolean | string | undefined=} sourceMap
+ * @typedef {Object} WebpackConfigParams
+ * @property {string} entry
+ * @property {string} outputFilename
+ * @property {string} outputPath
+ * @property {boolean} [sourceMap]
+ * @param {WebpackConfigParams} params
  * @returns {import("webpack").Configuration}
  */
-function getConfig(entry, outputFilename, sourceMap) {
+function getConfig(params) {
+  const { entry, outputFilename, outputPath, sourceMap } = params;
+
   return {
     mode: "development",
     entry: entry,
@@ -46,7 +49,7 @@ function getConfig(entry, outputFilename, sourceMap) {
     },
     output: {
       filename: outputFilename || "bundle.js",
-      path: path.resolve(process.cwd(), "./dist/.temp"),
+      path: outputPath,
     },
   };
 }

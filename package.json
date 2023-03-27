@@ -4,8 +4,8 @@
   "description": "A jsx email template builder. Supper easy and fast.",
   "type": "module",
   "scripts": {
-    "start": "node engine/cli.js start --port 3000",
-    "build": "node engine/cli.js build"
+    "start": "node engine/cli.js start --port 4000 --templatesDir ./new-project-template/email-templates",
+    "build": "node engine/cli.js build --templatesDir ./new-project-template/email-templates"
   },
   "bin": {
     "jsx-email-builder": "./engine/cli.js"
@@ -39,6 +39,7 @@
     "eslint": "^8.35.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-jsdoc": "^40.1.0",
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.8.6"
   },

@@ -2,14 +2,14 @@ import fs from "fs";
 import path from "path";
 
 export function getEmailTemplatesList(params) {
-  const { templatesDir } = params;
+  const { templatesDir, templatesPostFix } = params;
   const result = [];
 
   function traverseDir(dirPath) {
     const files = fs.readdirSync(dirPath);
-    // filter files that end with .template.tsx
+    // filter files that end with templatesPostFix (e.g .template.tsx)
     const templateFiles = files.filter((file) =>
-      file.endsWith(".template.tsx")
+      file.endsWith(templatesPostFix)
     );
 
     // loop through each template file and create a route for it
