@@ -1,11 +1,15 @@
-import fs from "fs";
+import fs from "fs-extra";
 import path from "path";
 import { getEmailTemplatesList } from "./template-finder.js";
-import { compile, cleanup } from "./compiler.js";
+import { compile, cleanupAll } from "./compiler.js";
+import { getConfig } from "./config.js";
 
 async function build(params) {
-  const templatesDir = params.templatesDir || "./email-templates";
-  const templatesPostFix = params.templatesPostFix || ".template.tsx";
+  const config = getConfig();
+  const templatesDir =
+    params.templatesDir || config.templatesDir || "./email-templates";
+  const templatesPostFix =
+    params.templatesPostFix || config.templatesPostFix || ".template.tsx";
 
   // 1. get all the templates
   const templates = getEmailTemplatesList({
@@ -46,7 +50,7 @@ async function build(params) {
   });
 
   // 4. cleanup
-  cleanup();
+  cleanupAll();
 }
 
 export default build;

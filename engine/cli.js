@@ -4,7 +4,7 @@ import path from "path";
 import parseArgs from "minimist";
 import startServer from "./server.js";
 import build from "./build.js";
-import initializeNewProject from "./init.js";
+import { initializeNewProject } from "./init.js";
 import fs from "fs-extra";
 
 const logger = console;

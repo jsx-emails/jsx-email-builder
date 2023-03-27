@@ -5,7 +5,7 @@ JSX Email Builder is a tool for building HTML emails using JSX. It does this by 
 Your templates will look like this:
 
 ```jsx
-// imports comes here
+// imports come here
 
 function Root() {
   return (
@@ -26,6 +26,12 @@ function Root() {
 }
 ```
 
+## Features
+
+### Translations
+
+Jsx email builder uses [i18next](https://www.i18next.com/) for translations so all the power of i18next is at your disposal.
+
 ## Prerequisites
 
 - Node.js 16 or higher
@@ -36,41 +42,18 @@ function Root() {
 
   make sure you have the latest version of NPM installed. You can check your version by running `npm -v` in your terminal.
 
-## Add to an existing project
-
-If you already have a project, you can add JSX Email Builder to it by running the following command:
-
-```bash
-# Using npm:
-npm install --save-dev jsx-email-builder
-
-# Using yarn:
-yarn add --dev jsx-email-builder
-
-# Using pnpm:
-pnpm add --save-dev jsx-email-builder
-```
-
-Then add the following scripts to your `package.json`:
-
-```json
-{
-  "scripts": {
-    "dev": "jsx-email-builder dev",
-    "build": "jsx-email-builder build"
-  }
-}
-```
-
 ## Create a new project
 
 If you don't have a project yet, you can create one by running the following command:
 
 ```bash
-npx jsx-email-builder init my-project
+npx jsx-email-builder@latest init my-project
+```
 
-# or optionally, you can specify the project directory and the templates directory:
-npx jsx-email-builder init my-project --projectDir ../projects/my-project --templatesDir templates
+Or optionally, you can specify the project directory and the templates directory:
+
+```bash
+npx jsx-email-builder init my-project --projectDir ../projects --templatesDir templates
 ```
 
 aliases: `new`, `create`
@@ -80,7 +63,13 @@ This will create a new project in the `my-project` directory. It will also creat
 ## Run your project
 
 ```bash
-jsx-email-builder dev
+npm run dev
+```
+
+Or using yarn:
+
+```bash
+yarn dev
 ```
 
 aliases: `start`, `serve`
@@ -90,7 +79,13 @@ This will start a development server that will watch your templates and recompil
 ## Build your project
 
 ```bash
-jsx-email-builder build
+npm run build
+```
+
+Or using yarn:
+
+```bash
+yarn build
 ```
 
 aliases: `compile`

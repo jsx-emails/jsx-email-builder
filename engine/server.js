@@ -11,12 +11,16 @@ import {
 } from "./socket.js";
 import { watchForChanges } from "./watcher.js";
 import { exceptionToHtml } from "./exception-to-html.js";
+import { getConfig } from "./config.js";
 
 async function startServer(params) {
+  const config = getConfig();
   const app = express();
-  const port = params.port || 3000;
-  const templatesDir = params.templatesDir || "./email-templates";
-  const templatesPostFix = params.templatesPostFix || ".template.tsx";
+  const port = params.port || config.port || 3000;
+  const templatesDir =
+    params.templatesDir || config.templatesDir || "./email-templates";
+  const templatesPostFix =
+    params.templatesPostFix || config.templatesPostFix || ".template.tsx";
 
   const httpServer = registerSocket({ express: app });
 
@@ -55,7 +59,6 @@ async function handleRequest(context) {
       templatesDir,
       templatesPostFix,
     });
-    console.log("🤖 :: templateRelativePath:", templateRelativePath);
     const templatePath = path.join(process.cwd(), templateRelativePath);
 
     if (!fs.existsSync(templatePath)) {

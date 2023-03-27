@@ -156,3 +156,8 @@ export function cleanup(params) {
     }
   }
 }
+
+export function cleanupAll() {
+  const tempDir = path.join(process.cwd(), "./dist/.temp");
+  fs.rmSync(tempDir, { recursive: true });
+}
