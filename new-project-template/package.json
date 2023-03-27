@@ -1,0 +1,17 @@
+{
+  "name": "emails-templates",
+  "description": "Email templates made by jsx email builder",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "jsx-email-builder start",
+    "build": "jsx-email-builder build"
+  },
+  "keywords": [
+    "email templates"
+  ],
+  "devDependencies": {
+    "jsx-email-builder": "^0.2.3"
+  },
+  "private": true
+}
