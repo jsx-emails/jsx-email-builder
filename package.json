@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "new": "node engine/cli.js new new-project --templatesDir templates",
-    "start": "node engine/cli.js start --port 4000 --templatesDir ./new-project-template/email-templates",
+    "start": "nodemon engine/cli.js start --port 4000 --templatesDir ./new-project-template/email-templates",
     "build": "node engine/cli.js build --templatesDir ./new-project-template/email-templates"
   },
   "bin": {

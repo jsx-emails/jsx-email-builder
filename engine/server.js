@@ -24,7 +24,7 @@ async function startServer(params) {
 
   const httpServer = registerSocket({ express: app });
 
-  const routes = await registerRoutes(
+  await registerRoutes(
     {
       templatesDir,
       templatesPostFix,
@@ -35,7 +35,8 @@ async function startServer(params) {
 
   registerHomeRoute({
     httpServer: app,
-    routes,
+    templatesDir,
+    templatesPostFix,
   });
 
   watchForChanges({

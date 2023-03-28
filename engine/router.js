@@ -6,7 +6,7 @@ import { getEmailTemplatesList } from "./template-finder.js";
  * @param {{ templatesDir: string; templatesPostFix:string; }} params
  * @returns {string[]}
  */
-function createRoutesOfTemplates(params) {
+export function getRoutesOfTemplates(params) {
   const { templatesDir, templatesPostFix } = params;
   const routes = [];
   const templatesPaths = getEmailTemplatesList({
@@ -22,7 +22,7 @@ function createRoutesOfTemplates(params) {
 export async function registerRoutes(params, callback) {
   const { httpServer, templatesDir, templatesPostFix } = params;
 
-  const routes = createRoutesOfTemplates({ templatesDir, templatesPostFix });
+  const routes = getRoutesOfTemplates({ templatesDir, templatesPostFix });
   routes.forEach((route) => {
     httpServer.get(route, (req, res) => {
       callback({
