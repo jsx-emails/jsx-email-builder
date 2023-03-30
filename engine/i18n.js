@@ -4,7 +4,7 @@ export function setupI18n(params) {
   const { lng = "en" } = params;
   i18next.init({
     lng,
-    debug: true,
+    debug: false,
     resources: {
       en: {
         translation: {},
@@ -18,7 +18,15 @@ export function setupI18n(params) {
   return i18next;
 }
 
-function trans(...params) {
+export function trans(...params) {
+  const defaultLang = "en"; // todo: make it configurable
+  const translateDefaultLang = false; // todo: make it configurable
+  const currentLang = i18next.language;
+  if (currentLang === defaultLang && !translateDefaultLang) {
+    const key = params[0];
+    return key;
+  }
+
   return i18next.t.apply(null, params);
 }
 

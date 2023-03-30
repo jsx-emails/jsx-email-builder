@@ -1,4 +1,5 @@
 {
+  "Welcome {{client_name}}!": "Bienvenue {{client_name}}!",
   "My name is <b>{{firstName}}</b>.": "Je m'appelle <b>{{firstName}}</b>.",
   "second sentence": "deuxième phrase"
 }

@@ -18,7 +18,7 @@ const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
  * @param {boolean=} options.compileAllLangs
  * @param {boolean=} options.prettify
  * @param {string=} options.defaultLang
- * @returns {Promise<{ html: string, localized: { [lang: string]: string } }>}
+ * @returns {Promise<{ html: string, subject: string, localized: { [lang: string]: {html: string, subject: string} } }>}
  */
 export async function compile(options) {
   const {
@@ -29,10 +29,9 @@ export async function compile(options) {
     defaultLang = "en",
   } = options;
 
-  const result = { html: "", localized: {} };
+  const result = { html: "", subject: "", localized: {} };
   let entryFileName;
   let bundleFileName;
-  let html;
   let i18next;
   try {
     // 1. create a temp folder to store the entry file
@@ -55,9 +54,10 @@ export async function compile(options) {
     // 6. setup the utils methods
     setupUtils();
 
-    // 7. Run the transpiled code to get html
-    html = await runBundle(bundleFileName, prettify);
+    // 7. Run the transpiled code to get html and subject
+    const { html, subject } = await runBundle(bundleFileName, prettify);
     result.html = html;
+    result.subject = subject;
 
     // 8. if compileAllLangs, run the transpiled code again for each language
     if (i18nEnabled && compileAllLangs && i18next) {
@@ -66,11 +66,11 @@ export async function compile(options) {
       );
       for (const lang of languages) {
         await i18next.changeLanguage(lang);
-        const html = await runBundle(
+        const { html, subject } = await runBundle(
           bundleFileName + "?lang=" + lang,
           prettify
         );
-        result.localized[lang] = html;
+        result.localized[lang] = { html, subject };
       }
     }
 
@@ -149,21 +149,30 @@ async function TranspileAndBundle(entryFileName) {
   }
 }
 
+/**
+ * @param {string} bundleFileName
+ * @param {boolean=} prettify
+ * @returns {Promise<{ html: string, subject: string }>}
+ * */
 async function runBundle(bundleFileName, prettify = false) {
   try {
     const jsFilePath = path.join(
       process.cwd(),
       `./dist/.temp/${bundleFileName}`
     );
+
     await import(jsFilePath);
-    const html = `<!DOCTYPE html>${global.jsx.output.outerHTML}`;
+
+    const subject = global.outputs?.subject;
+    const html = `<!DOCTYPE html>${global.jsx.output.html.outerHTML}`;
 
     if (prettify) {
-      return prettier.format(html, { parser: "html" });
+      return { html: prettier.format(html, { parser: "html" }), subject };
     }
-    return html;
+    return { html, subject };
   } catch (error) {
-    throw new Error("Error while running the bundle:\n" + error.message);
+    error.message = "Error while running the bundle:\n" + error.message;
+    throw error;
   }
 }
 
@@ -176,6 +185,10 @@ async function runBundle(bundleFileName, prettify = false) {
  * */
 export function cleanup(params) {
   const { entryFileName, bundleFileName, sourceMap = true } = params;
+  const debug = false; // todo: make this configurable
+  if (debug) {
+    return;
+  }
   const tempDir = path.join(process.cwd(), "./dist/.temp");
   const entryFileSourceMap = entryFileName + ".map";
   const filesToDelete = [
@@ -192,6 +205,10 @@ export function cleanup(params) {
 }
 
 export function cleanupAll() {
+  const debug = false; // todo: make this configurable
+  if (debug) {
+    return;
+  }
   const tempDir = path.join(process.cwd(), "./dist/.temp");
   fs.rmSync(tempDir, { recursive: true });
 }

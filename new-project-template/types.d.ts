@@ -40,6 +40,8 @@ type JsxFragment = Iterable<JsxChildren>;
 
 declare function variable(name: string): string;
 
+declare function setSubject(name: string): void;
+
 /*****************************************************************
  *  Translation types
  *****************************************************************/

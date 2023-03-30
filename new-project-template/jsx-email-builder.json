@@ -1,3 +1,4 @@
 {
+  "subjectRequired": true,
   "templatesDir": "email-templates"
 }

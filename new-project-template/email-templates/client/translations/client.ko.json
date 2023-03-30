@@ -1,4 +1,5 @@
 {
+  "Welcome {{client_name}}!": "환영합니다 {{client_name}}!",
   "{{client_name}}! We're so excited to have you on board. We hope you enjoy your time here.": "{{client_name}}! 여러분을 모시게 되어 매우 기쁩니다. 이곳에서 즐거운 시간을 보내시기 바랍니다.",
   "My name is {{firstName}}.": "내 이름은 {{firstName}}입니다.",
   "I am a <b>{{occupancy}}</b>._one": "저는 <b>{{occupancy}}</b>입니다 1.",

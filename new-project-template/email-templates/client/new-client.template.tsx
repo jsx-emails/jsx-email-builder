@@ -9,6 +9,8 @@ function Root() {
   addTrans(generalTranslations);
   addTrans(clientTranslations);
 
+  setSubject(`Welcome ${variable("client_name")}!`);
+
   return (
     <EmailTemplate>
       <Header>Hello from JSX Email Builder</Header>

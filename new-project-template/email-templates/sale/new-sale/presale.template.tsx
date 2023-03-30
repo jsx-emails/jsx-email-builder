@@ -1,4 +1,6 @@
 function Root() {
+  setSubject(`We are preselling ${variable("project_name")}!`);
+
   return (
     <html>
       <head></head>
@@ -11,8 +13,8 @@ function Root() {
             border: "1px solid black",
           }}
         >
-          <h1>RTL</h1>
-          <p> second email template</p>
+          <h1>Pre-sale</h1>
+          <p>We are currently in pre-sale</p>
         </div>
       </body>
     </html>

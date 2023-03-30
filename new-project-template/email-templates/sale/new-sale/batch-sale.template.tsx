@@ -1,4 +1,6 @@
 function Root() {
+  setSubject(`Multiple items sold to ${variable("client_name")}!`);
+
   return (
     <html>
       <head></head>
@@ -11,8 +13,10 @@ function Root() {
             border: "1px solid black",
           }}
         >
-          <h1>RTL</h1>
-          <p> second email template</p>
+          <h1>Wow batch sale!</h1>
+          <p>
+            {variable("client_name")} bought {variable("items_sold")} items!
+          </p>
         </div>
       </body>
     </html>
