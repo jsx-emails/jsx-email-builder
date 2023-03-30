@@ -4,7 +4,7 @@ function groupRoutesByFolder(routes) {
   const routesByFolder = {};
   routes.forEach((route) => {
     const routeParts = route.split("/");
-    const folder = routeParts[1].replace(/[-_]/g, " ");
+    const folder = routeParts[1];
     const routeWithoutFolder = routeParts.slice(2).join("/");
     if (!routesByFolder[folder]) {
       routesByFolder[folder] = [];
@@ -88,8 +88,9 @@ export function registerHomeRoute(params) {
               ? "<div class='no-templates'>No templates found</div>"
               : Object.keys(routesByFolder)
                   .map((folder) => {
+                    const groupName = folder.replace(/[-_]/g, " ");
                     return `
-                <h2>${folder}</h2>
+                <h2>${groupName}</h2>
                 <ol>
                   ${routesByFolder[folder]
                     .map((route) => {
