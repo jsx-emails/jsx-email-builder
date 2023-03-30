@@ -7,19 +7,31 @@ import getWebpackConfig from "./webpack-configs.js";
 import { setupJsxFactory } from "./jsx-parser.js";
 import { setupI18n } from "./i18n.js";
 import { setupUtils } from "./utils.js";
+import prettier from "prettier";
 
 const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
 /**
  * @param {Object} options
  * @param {string} options.templatePath
+ * @param {boolean} options.i18nEnabled
+ * @param {boolean} options.compileAllLangs
+ * @param {boolean=} options.prettify
+ * @returns {Promise<{ html: string, localized: { [lang: string]: string } }>}
  */
 export async function compile(options) {
-  const { templatePath } = options;
+  const {
+    templatePath,
+    i18nEnabled = true,
+    compileAllLangs = false,
+    prettify = false,
+  } = options;
 
+  const result = { html: "", localized: {} };
   let entryFileName;
   let bundleFileName;
   let html;
+  let i18next;
   try {
     // 1. create a temp folder to store the entry file
     createTempDir();
@@ -34,23 +46,40 @@ export async function compile(options) {
     setupJsxFactory();
 
     // 5. setup the i18n methods if i18n is enabled
-    // todo: check if i18n is enabled
-    setupI18n({ lng: "ko" });
+    if (i18nEnabled) {
+      i18next = setupI18n({ lng: "en" });
+    }
 
     // 6. setup the utils methods
     setupUtils();
 
     // 7. Run the transpiled code to get html
-    html = await runBundle(bundleFileName);
+    html = await runBundle(bundleFileName, prettify);
+    result.html = html;
 
-    // 8. cleanup
+    // 8. if compileAllLangs, run the transpiled code again for each language
+    if (i18nEnabled && compileAllLangs && i18next) {
+      const languages = Object.keys(i18next.services.resourceStore.data).filter(
+        (lang) => lang !== "en"
+      );
+      for (const lang of languages) {
+        await i18next.changeLanguage(lang);
+        const html = await runBundle(
+          bundleFileName + "?lang=" + lang,
+          prettify
+        );
+        result.localized[lang] = html;
+      }
+    }
+
+    // 9. cleanup
     cleanup({ entryFileName, bundleFileName });
   } catch (error) {
     cleanup({ entryFileName, bundleFileName });
     throw error;
   }
 
-  return html;
+  return result;
 }
 
 function createTempDir() {
@@ -118,7 +147,7 @@ async function TranspileAndBundle(entryFileName) {
   }
 }
 
-async function runBundle(bundleFileName) {
+async function runBundle(bundleFileName, prettify = false) {
   try {
     const jsFilePath = path.join(
       process.cwd(),
@@ -127,6 +156,9 @@ async function runBundle(bundleFileName) {
     await import(jsFilePath);
     const html = `<!DOCTYPE html>${global.jsx.output.outerHTML}`;
 
+    if (prettify) {
+      return prettier.format(html, { parser: "html" });
+    }
     return html;
   } catch (error) {
     throw new Error("Error while running the bundle:\n" + error.message);

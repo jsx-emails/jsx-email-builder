@@ -14,6 +14,8 @@ export function setupI18n(params) {
 
   global.trans = trans;
   global.addTrans = addTrans;
+
+  return i18next;
 }
 
 function trans(...params) {

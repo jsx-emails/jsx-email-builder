@@ -26,12 +26,15 @@ async function build(params) {
     );
     return compile({
       templatePath,
+      i18nEnabled: true, // TODO: make it configurable
+      compileAllLangs: true,
+      prettify: true, // TODO: make it configurable
     });
   });
   const results = await Promise.all(promises);
 
   // 3. write the results to the dist folder
-  results.forEach((html, index) => {
+  results.forEach((result, index) => {
     const templatePath = templates[index];
     // if html directory doesn't exist, create it
     const distDir = path.join(
@@ -46,7 +49,19 @@ async function build(params) {
       process.cwd(),
       `./dist/${htmlRelativePath}`
     );
-    fs.writeFileSync(htmlAbsolutePath, html);
+    fs.writeFileSync(htmlAbsolutePath, result.html);
+    Object.keys(result.localized).forEach((lang) => {
+      // put the localized html files in a subfolder with the language name:
+      const localizedHtmlRelativePath = templatePath
+        .replace(templatesPostFix, ".html")
+        .replace(/([^/]+)$/, `${lang}/$1`);
+      const localizedHtmlAbsolutePath = path.join(
+        process.cwd(),
+        `./dist/${localizedHtmlRelativePath}`
+      );
+      fs.ensureDirSync(path.dirname(localizedHtmlAbsolutePath));
+      fs.writeFileSync(localizedHtmlAbsolutePath, result.localized[lang]);
+    });
   });
 
   // 4. cleanup
