@@ -67,9 +67,15 @@ async function handleRequest(context) {
       return;
     }
 
-    let html = await compile({ templatePath });
+    const defaultLang = req.query.lang?.toString() || "en";
+    let result = await compile({
+      templatePath,
+      i18nEnabled: true,
+      defaultLang,
+    });
+    let html = result.html;
     if (!req.query.patch) {
-      html = injectClientSocketScript({ html });
+      html = injectClientSocketScript({ html: result.html });
     }
     res.send(html);
   } catch (e) {

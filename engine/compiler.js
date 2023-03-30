@@ -15,8 +15,9 @@ const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
  * @param {Object} options
  * @param {string} options.templatePath
  * @param {boolean} options.i18nEnabled
- * @param {boolean} options.compileAllLangs
+ * @param {boolean=} options.compileAllLangs
  * @param {boolean=} options.prettify
+ * @param {string=} options.defaultLang
  * @returns {Promise<{ html: string, localized: { [lang: string]: string } }>}
  */
 export async function compile(options) {
@@ -25,6 +26,7 @@ export async function compile(options) {
     i18nEnabled = true,
     compileAllLangs = false,
     prettify = false,
+    defaultLang = "en",
   } = options;
 
   const result = { html: "", localized: {} };
@@ -47,7 +49,7 @@ export async function compile(options) {
 
     // 5. setup the i18n methods if i18n is enabled
     if (i18nEnabled) {
-      i18next = setupI18n({ lng: "en" });
+      i18next = setupI18n({ lng: defaultLang });
     }
 
     // 6. setup the utils methods
@@ -60,7 +62,7 @@ export async function compile(options) {
     // 8. if compileAllLangs, run the transpiled code again for each language
     if (i18nEnabled && compileAllLangs && i18next) {
       const languages = Object.keys(i18next.services.resourceStore.data).filter(
-        (lang) => lang !== "en"
+        (lang) => lang !== defaultLang
       );
       for (const lang of languages) {
         await i18next.changeLanguage(lang);
