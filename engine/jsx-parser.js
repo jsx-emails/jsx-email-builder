@@ -18,7 +18,7 @@ function getCssKey(key) {
 
 function getCssValue(value) {
   if (typeof value === "number") {
-    return value + "px";
+    return value === 0 ? 0 : value + "px";
   }
   return value;
 }
