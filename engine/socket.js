@@ -1,5 +1,4 @@
 import fs from "fs";
-import { createServer } from "http";
 import path from "path";
 import url from "url";
 import WebSocket, { WebSocketServer } from "ws";
@@ -7,8 +6,7 @@ import WebSocket, { WebSocketServer } from "ws";
 let webSocketServer;
 
 export function registerSocket(params) {
-  const { express } = params;
-  const httpServer = createServer(express);
+  const { httpServer } = params;
   webSocketServer = new WebSocketServer({ server: httpServer });
 
   webSocketServer.on("connection", () => {

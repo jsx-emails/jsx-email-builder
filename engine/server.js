@@ -1,4 +1,6 @@
 import express from "express";
+import http from "http";
+import https from "https";
 import fs from "fs";
 import path from "path";
 import { compile } from "./compiler.js";
@@ -13,6 +15,46 @@ import { watchForChanges } from "./watcher.js";
 import { exceptionToHtml } from "./exception-to-html.js";
 import { getConfig } from "./config.js";
 
+function getHttpServer(params) {
+  const { app } = params;
+  const config = getConfig();
+  const httpsEnabled = config.httpsEnabled;
+
+  if (!httpsEnabled) {
+    const httpServer = http.createServer(app);
+    return httpServer;
+  }
+
+  if (!config.httpsKeyPath) {
+    throw new Error(
+      "'httpsKeyPath' is required. Please add it to the jsx-email-builder.json file"
+    );
+  }
+  if (!config.httpsCertPath) {
+    throw new Error(
+      "'httpsCertPath' is required.  Please add it to the jsx-email-builder.json file"
+    );
+  }
+  if (!fs.existsSync(config.httpsKeyPath)) {
+    throw new Error(
+      `The file specified in 'httpsKeyPath' doesn't exist: ${config.httpsKeyPath}`
+    );
+  }
+  if (!fs.existsSync(config.httpsCertPath)) {
+    throw new Error(
+      `The file specified in 'httpsCertPath' doesn't exist: ${config.httpsCertPath}`
+    );
+  }
+  const httpServer = https.createServer(
+    {
+      key: fs.readFileSync(config.httpsKeyPath),
+      cert: fs.readFileSync(config.httpsCertPath),
+    },
+    app
+  );
+  return httpServer;
+}
+
 async function startServer(params) {
   const config = getConfig();
   const app = express();
@@ -24,7 +66,9 @@ async function startServer(params) {
   const componentsOutsideTemplatesDirPaths =
     config.componentsOutsideTemplatesDirPaths || [];
 
-  const httpServer = registerSocket({ express: app });
+  const httpServer = getHttpServer({ app });
+
+  registerSocket({ httpServer });
 
   await registerRoutes(
     {
