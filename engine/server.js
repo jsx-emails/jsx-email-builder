@@ -21,6 +21,8 @@ async function startServer(params) {
     params.templatesDir || config.templatesDir || "./email-templates";
   const templatesPostFix =
     params.templatesPostFix || config.templatesPostFix || ".template.tsx";
+  const componentsOutsideTemplatesDirPaths =
+    config.componentsOutsideTemplatesDirPaths || [];
 
   const httpServer = registerSocket({ express: app });
 
@@ -41,7 +43,7 @@ async function startServer(params) {
 
   watchForChanges({
     callback: (_type, file) => sendMessage("change", { file }),
-    path: templatesDir,
+    paths: [templatesDir, ...componentsOutsideTemplatesDirPaths],
   });
 
   httpServer.listen(port, () => {
