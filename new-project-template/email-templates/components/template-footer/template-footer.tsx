@@ -1,7 +1,7 @@
 import { HtmlComment } from "jsx-email-builder/components";
 
 const styles = {
-  header: {
+  footer: {
     backgroundColor: "#101010",
     color: "#fff",
     padding: "16px 24px",
@@ -9,14 +9,14 @@ const styles = {
   },
 };
 
-function Header(props: { children: JsxChildren }) {
+function Footer(props: { children: JsxChildren }) {
   const { children } = props;
 
   return (
-    <HtmlComment startComment="Header:Start" endComment="Header:End">
-      <div style={styles.header}>{children}</div>
+    <HtmlComment startComment="Footer:Start" endComment="Footer:End">
+      <div style={styles.footer}>{children}</div>
     </HtmlComment>
   );
 }
 
-export default Header;
+export default Footer;

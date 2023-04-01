@@ -1,3 +1,5 @@
+import { HtmlComment } from "jsx-email-builder/components";
+
 const styles = {
   body: {
     padding: "16px 24px",
@@ -11,7 +13,11 @@ const styles = {
 function TemplateBody(props: { children: JsxChildren }) {
   const { children } = props;
 
-  return <div style={styles.body}>{children}</div>;
+  return (
+    <HtmlComment startComment="Body:Start" endComment="Body:End">
+      <div style={styles.body}>{children}</div>
+    </HtmlComment>
+  );
 }
 
 export default TemplateBody;

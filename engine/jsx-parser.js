@@ -27,7 +27,13 @@ function createElement(component, props, ...children) {
   const { window } = global.jsx.dom;
   const { document } = window;
 
-  if (typeof component === "function") {
+  // component is a jsx component
+  const componentIsJsxComponent = typeof component === "function";
+  if (componentIsJsxComponent) {
+    if (component.name === "HtmlComment") {
+      return createElementFromHtmlComment(props, children);
+    }
+
     const componentChildren = children.length === 1 ? children[0] : children;
     const returnedElement = component({
       ...props,
@@ -36,6 +42,7 @@ function createElement(component, props, ...children) {
     return returnedElement;
   }
 
+  // component is a html tag
   const tag = component;
   const element = document.createElement(tag);
   if (props) {
@@ -61,7 +68,12 @@ function createElement(component, props, ...children) {
       }
     });
   }
-  createChildren(element, children);
+
+  // create children
+  if (children) {
+    createChildren(element, children);
+  }
+
   return element;
 }
 
@@ -69,36 +81,37 @@ function createChildren(element, children) {
   const { window } = global.jsx.dom;
   const { document } = window;
 
-  if (children) {
-    if (Array.isArray(children)) {
-      children.forEach((child) => {
-        if (Array.isArray(child)) {
-          createChildren(element, child);
-        } else if (typeof child === "string") {
-          element.appendChild(document.createTextNode(global.trans(child)));
-        } else if (child === null || child === undefined) {
-          // do nothing
-        } else if (typeof child === "function") {
-          // todo: implement this
-          throw new Error("function as child is not supported!");
-          // const returnedElement = component({ ...props, children });
-          // element.appendChild(returnedElement);
-        } else if (child instanceof JsxObject) {
-          element.innerHTML = child.input.__html;
-        } else if (child instanceof window.Node) {
-          element.appendChild(child);
-        } else if (child instanceof Object) {
-          element.innerHTML = global.trans(
-            child.trans?.text,
-            child.trans.options
-          );
+  if (Array.isArray(children)) {
+    children.forEach((child) => {
+      if (Array.isArray(child)) {
+        createChildren(element, child);
+      } else if (typeof child === "string") {
+        element.appendChild(document.createTextNode(global.trans(child)));
+      } else if (child === null || child === undefined) {
+        // do nothing
+      } else if (typeof child === "function") {
+        // todo: implement this
+        throw new Error("function as child is not supported!");
+        // const returnedElement = component({ ...props, children });
+        // element.appendChild(returnedElement);
+      } else if (child instanceof JsxObject) {
+        element.innerHTML = child.input.__html;
+      } else if (child instanceof window.Node) {
+        if (!element.appendChild) {
+          console.log({ element });
         }
-      });
-    } else if (typeof children === "string") {
-      element.appendChild(document.createTextNode(children));
-    } else {
-      element.appendChild(children);
-    }
+        element.appendChild(child);
+      } else if (child instanceof Object) {
+        element.innerHTML = global.trans(
+          child.trans?.text,
+          child.trans.options
+        );
+      }
+    });
+  } else if (typeof children === "string") {
+    element.appendChild(document.createTextNode(children));
+  } else {
+    element.appendChild(children);
   }
 }
 
@@ -113,8 +126,20 @@ function createFragment(props, children) {
       children.forEach((child) => {
         if (typeof child === "string") {
           fragment.appendChild(document.createTextNode(child));
-        } else {
+        } else if (child === null || child === undefined) {
+          // do nothing
+        } else if (child instanceof window.Node) {
           fragment.appendChild(child);
+        } else if (Array.isArray(child)) {
+          child.forEach((grandchild) => {
+            if (typeof grandchild === "string") {
+              fragment.appendChild(document.createTextNode(grandchild));
+            } else if (grandchild === null || grandchild === undefined) {
+              // do nothing
+            } else if (grandchild instanceof window.Node) {
+              fragment.appendChild(grandchild);
+            }
+          });
         }
       });
     } else {
@@ -122,6 +147,39 @@ function createFragment(props, children) {
     }
   }
   return fragment;
+}
+
+function createElementFromHtmlComment(props, children) {
+  const { window } = global.jsx.dom;
+  const { document } = window;
+
+  const startComment =
+    props.startComment && document.createComment(props.startComment);
+  const endComment =
+    props.endComment && document.createComment(props.endComment);
+  const comment = props.comment && document.createComment(props.comment);
+
+  if (props.condition) {
+    const fragment = createFragment({}, children);
+    const wrapper = document.createElement("div");
+    wrapper.appendChild(fragment);
+    const childString = wrapper.innerHTML || "";
+    if (!childString.trim()) {
+      console.warn(
+        "A conditional comment without content found! condition:",
+        props.condition
+      );
+    }
+    return document.createComment(
+      `[if ${props.condition}]>\n${childString}\n<![endif]`
+    );
+  }
+
+  if (children.length > 0) {
+    const fragment = createFragment({}, children);
+    return [comment, startComment, fragment, endComment];
+  }
+  return [comment, startComment, endComment];
 }
 
 function JsxObject(input) {
