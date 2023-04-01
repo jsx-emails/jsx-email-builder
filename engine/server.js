@@ -35,20 +35,22 @@ function getHttpServer(params) {
       "'httpsCertPath' is required.  Please add it to the jsx-email-builder.json file"
     );
   }
-  if (!fs.existsSync(config.httpsKeyPath)) {
+  const httpsKeyPath = path.join(process.cwd(), config.httpsKeyPath);
+  const httpsCertPath = path.join(process.cwd(), config.httpsCertPath);
+  if (!fs.existsSync(httpsKeyPath)) {
     throw new Error(
       `The file specified in 'httpsKeyPath' doesn't exist: ${config.httpsKeyPath}`
     );
   }
-  if (!fs.existsSync(config.httpsCertPath)) {
+  if (!fs.existsSync(httpsCertPath)) {
     throw new Error(
       `The file specified in 'httpsCertPath' doesn't exist: ${config.httpsCertPath}`
     );
   }
   const httpServer = https.createServer(
     {
-      key: fs.readFileSync(config.httpsKeyPath),
-      cert: fs.readFileSync(config.httpsCertPath),
+      key: fs.readFileSync(httpsKeyPath),
+      cert: fs.readFileSync(httpsCertPath),
     },
     app
   );
