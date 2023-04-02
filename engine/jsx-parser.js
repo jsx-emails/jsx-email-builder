@@ -1,7 +1,7 @@
 import { JSDOM } from "jsdom";
 
 export function setupJsxFactory() {
-  const dom = new JSDOM("<!DOCTYPE html>");
+  const dom = new JSDOM("");
 
   global.jsx = {
     createElement,
@@ -30,6 +30,11 @@ function createElement(component, props, ...children) {
   // component is a jsx component
   const componentIsJsxComponent = typeof component === "function";
   if (componentIsJsxComponent) {
+    if (component.name === "Doctype") {
+      addDoctype(props);
+      return;
+    }
+
     if (component.name === "HtmlComment") {
       return createElementFromHtmlComment(props, children);
     }
@@ -115,12 +120,14 @@ function createChildren(element, children) {
   }
 }
 
-// todo: test this
-function createFragment(props, children) {
+function createFragment(props = {}) {
+  const { children } = props;
   const { window } = global.jsx.dom;
   const { document } = window;
 
   const fragment = document.createDocumentFragment();
+  let htmlElement;
+
   if (children) {
     if (Array.isArray(children)) {
       children.forEach((child) => {
@@ -128,6 +135,9 @@ function createFragment(props, children) {
           fragment.appendChild(document.createTextNode(child));
         } else if (child === null || child === undefined) {
           // do nothing
+        } else if (child.nodeName === "HTML") {
+          htmlElement = child;
+          return;
         } else if (child instanceof window.Node) {
           fragment.appendChild(child);
         } else if (Array.isArray(child)) {
@@ -142,11 +152,21 @@ function createFragment(props, children) {
           });
         }
       });
-    } else {
+    } else if (typeof children === "string") {
       fragment.appendChild(document.createTextNode(children));
+    } else {
+      throw new Error("unexpected children type");
     }
   }
-  return fragment;
+
+  return htmlElement || fragment;
+}
+
+function addDoctype(props) {
+  if (global.jsx.doctype) {
+    throw new Error("Doctype can only be added once!");
+  }
+  global.jsx.doctype = `<!DOCTYPE ${props.attributes} >`;
 }
 
 function createElementFromHtmlComment(props, children) {
@@ -160,7 +180,7 @@ function createElementFromHtmlComment(props, children) {
   const comment = props.comment && document.createComment(props.comment);
 
   if (props.condition) {
-    const fragment = createFragment({}, children);
+    const fragment = createFragment({ children });
     const wrapper = document.createElement("div");
     wrapper.appendChild(fragment);
     const childString = wrapper.innerHTML || "";
@@ -176,7 +196,7 @@ function createElementFromHtmlComment(props, children) {
   }
 
   if (children.length > 0) {
-    const fragment = createFragment({}, children);
+    const fragment = createFragment({ children });
     return [comment, startComment, fragment, endComment];
   }
   return [comment, startComment, endComment];

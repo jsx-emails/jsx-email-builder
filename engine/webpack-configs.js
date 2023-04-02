@@ -19,7 +19,6 @@ function getConfig(params) {
       rules: [
         {
           test: /\.tsx?$/,
-          exclude: /(node_modules)/,
           use: {
             loader: "swc-loader",
             options: {

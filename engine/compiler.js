@@ -164,7 +164,8 @@ async function runBundle(bundleFileName, prettify = false) {
     await import(jsFilePath);
 
     const subject = global.outputs?.subject;
-    const html = `<!DOCTYPE html>${global.jsx.output.html.outerHTML}`;
+    const doctype = global.jsx.doctype || "<!DOCTYPE html>";
+    const html = `${doctype}\n${global.jsx.output.html.outerHTML}`;
 
     if (prettify) {
       return { html: prettier.format(html, { parser: "html" }), subject };
