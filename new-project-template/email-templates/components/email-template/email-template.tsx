@@ -12,8 +12,8 @@ function EmailTemplate(props: { children: JsxChildren }) {
         <head>
           <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
           <meta name="viewport" content="width=device-width" />
-          <HtmlComment condition="mso | IE">
-            <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+          <HtmlComment condition="!mso" alt>
+            <meta http-equiv="X-UA-Compatible" content="IE=edge" />
           </HtmlComment>
         </head>
         <body>{children}</body>

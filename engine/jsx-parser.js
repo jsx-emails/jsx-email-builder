@@ -190,6 +190,11 @@ function createElementFromHtmlComment(props, children) {
         props.condition
       );
     }
+    if (props.alt) {
+      return document.createComment(
+        `[if ${props.condition}]><!-->\n${childString}\n<!--<![endif]`
+      );
+    }
     return document.createComment(
       `[if ${props.condition}]>\n${childString}\n<![endif]`
     );

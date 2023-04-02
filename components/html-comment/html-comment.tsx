@@ -15,7 +15,8 @@ type Props =
     }
   | {
       children: any;
-      condition?: string;
+      condition: string;
+      alt?: true;
     };
 
 export default HtmlComment;
