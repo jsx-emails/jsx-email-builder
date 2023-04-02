@@ -85,13 +85,16 @@ function createElement(component, props, ...children) {
 function createChildren(element, children) {
   const { window } = global.jsx.dom;
   const { document } = window;
+  const nonTranslatableTags = ["SCRIPT", "STYLE", "TEXTAREA"];
 
   if (Array.isArray(children)) {
     children.forEach((child) => {
       if (Array.isArray(child)) {
         createChildren(element, child);
       } else if (typeof child === "string") {
-        element.appendChild(document.createTextNode(global.trans(child)));
+        const translatable = !nonTranslatableTags.includes(element.nodeName);
+        const text = translatable ? global.trans(child) : child;
+        element.appendChild(document.createTextNode(text));
       } else if (child === null || child === undefined) {
         // do nothing
       } else if (typeof child === "function") {
