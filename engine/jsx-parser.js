@@ -166,9 +166,9 @@ function createFragment(props = {}) {
 }
 
 function addDoctype(props) {
-  if (global.jsx.doctype) {
-    throw new Error("Doctype can only be added once!");
-  }
+  // if (global.jsx.doctype) {
+  //   throw new Error("Doctype can only be added once!");
+  // }
   global.jsx.doctype = `<!DOCTYPE ${props.attributes} >`;
 }
 
