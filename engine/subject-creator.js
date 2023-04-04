@@ -1,6 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
-import { getConfig } from "./config";
+import { getConfig } from "./config.js";
 
 export async function createSubjectTemplate(params) {
   const { templateDir, emailTemplateName, subject } = params;

@@ -174,11 +174,21 @@ function createElementFromHtmlComment(props, children) {
   const comment = props.comment && document.createComment(props.comment);
 
   if (props.condition) {
-    const fragment = createFragment({ children });
-    const wrapper = document.createElement("div");
-    wrapper.appendChild(fragment);
-    const childString = wrapper.innerHTML || "";
-    if (!childString.trim()) {
+    let childString;
+    const childrenAreString = children.every(
+      (child) => typeof child === "string"
+    );
+    if (childrenAreString) {
+      childString = children.join("");
+    } else {
+      const fragment = createFragment({ children });
+      const wrapper = document.createElement("div");
+      wrapper.appendChild(fragment);
+      childString = wrapper.innerHTML || "";
+    }
+    childString = childString.trim();
+
+    if (!childString) {
       console.warn(
         "A conditional comment without content found! condition:",
         props.condition
