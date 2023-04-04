@@ -16,13 +16,6 @@ function getCssKey(key) {
   return key.replace(/([A-Z])/g, (g) => `-${g[0].toLowerCase()}`);
 }
 
-function getCssValue(value) {
-  if (typeof value === "number") {
-    return value === 0 ? 0 : value + "px";
-  }
-  return value;
-}
-
 function createElement(component, props, ...children) {
   const { window } = global.jsx.dom;
   const { document } = window;
@@ -61,9 +54,7 @@ function createElement(component, props, ...children) {
         element.setAttribute("class", props[key]);
       } else if (key === "style") {
         Object.keys(props[key]).forEach((styleKey) => {
-          element.style[getCssKey(styleKey)] = getCssValue(
-            props[key][styleKey]
-          );
+          element.style[getCssKey(styleKey)] = props[key][styleKey];
         });
       } else if (key === "dangerouslySetInnerHTML") {
         element.innerHTML = props[key].__html;
