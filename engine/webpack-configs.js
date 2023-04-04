@@ -35,6 +35,7 @@ function getConfig(params) {
                   react: {
                     pragma: "global.jsx.createElement",
                     pragmaFrag: "global.jsx.createFragment",
+                    throwIfNamespace: false,
                   },
                 },
               },
