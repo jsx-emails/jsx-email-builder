@@ -11,7 +11,7 @@ const config = {
   },
   plugins: ["jsdoc", "prettier"],
   rules: {
-    "prettier/prettier": ["error"],
+    "prettier/prettier": ["warn"],
     "jsdoc/no-undefined-types": ["error"],
     quotes: ["error", "double"],
     semi: ["error", "always"],

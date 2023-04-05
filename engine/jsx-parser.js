@@ -1,4 +1,5 @@
 import { JSDOM } from "jsdom";
+import { TRANSLATABLE_TAGS } from "./i18n.js";
 
 export function setupJsxFactory() {
   const dom = new JSDOM("");
@@ -67,24 +68,22 @@ function createElement(component, props, ...children) {
 
   // create children
   if (children) {
-    createChildren(element, children);
+    appendChildren(element, children);
   }
 
   return element;
 }
 
-function createChildren(element, children) {
+function appendChildren(element, children, insideAChild = false) {
   const { window } = global.jsx.dom;
   const { document } = window;
-  const nonTranslatableTags = ["SCRIPT", "STYLE", "TEXTAREA"];
 
   if (Array.isArray(children)) {
     children.forEach((child) => {
       if (Array.isArray(child)) {
-        createChildren(element, child);
+        appendChildren(element, child, true);
       } else if (typeof child === "string") {
-        const translatable = !nonTranslatableTags.includes(element.nodeName);
-        const text = translatable ? global.trans(child) : child;
+        const text = child;
         element.appendChild(document.createTextNode(text));
       } else if (child === null || child === undefined) {
         // do nothing
@@ -97,20 +96,27 @@ function createChildren(element, children) {
         element.innerHTML = child.input.__html;
       } else if (child instanceof window.Node) {
         if (!element.appendChild) {
-          console.log({ element });
+          console.warn("unexpected node object:", { element });
+          return;
         }
         element.appendChild(child);
       } else if (child instanceof Object) {
-        element.innerHTML = global.trans(
-          child.trans?.text,
-          child.trans.options
-        );
+        // todo: this is not correct anymore:
+        // element.innerHTML = global.trans(
+        //   child.trans?.text,
+        //   child.trans.options
+        // );
       }
     });
   } else if (typeof children === "string") {
     element.appendChild(document.createTextNode(children));
   } else {
     element.appendChild(children);
+  }
+
+  // todo: check if translation is enabled
+  if (!insideAChild) {
+    translateChildren(element);
   }
 }
 
@@ -209,6 +215,62 @@ function createElementFromHtmlComment(props, children) {
     return [comment, startComment, fragment, endComment];
   }
   return [comment, startComment, endComment];
+}
+
+function translateChildren(element) {
+  if (!TRANSLATABLE_TAGS.includes(element.nodeName)) {
+    return;
+  }
+
+  let text = element.innerHTML;
+
+  // if &nbsp; then skip translation
+  if (text === "&nbsp;") {
+    return;
+  }
+  // if includes tags other than b, i, a tags, then skip translation
+  if (text.match(/<([^bia/]|[bia][^ >])/)) {
+    return;
+  }
+  // if after removing all variables, the text doesn't include any letters, then skip translation
+  // todo: this won't work with non-english languages
+  if (!text.replace(/{{[^}]*}}/g, "").match(/[a-zA-Z]/)) {
+    return;
+  }
+
+  // remove extra spaces and new lines
+  text = text
+    .replace(/[\r\n]+/g, " ")
+    .replace(/\s\s+/g, " ")
+    .trim();
+  // remove all attributes from tags but keep the content and tags
+  text = text.replace(/<[^>]*>/g, (match) => {
+    return match.replace(/<[^>]*>/, (match) => {
+      return match.replace(/ [^=]+="[^"]*"/g, "");
+    });
+  });
+
+  // translate text
+  const translatedText = global.trans(text);
+
+  // add back removed attributes to text using the original element inner html
+  const translatedChildrenString = translatedText.replace(
+    /<[^>]*>/g,
+    (match) => {
+      return match.replace(/<[^>]*>/, (match) => {
+        const originalMatch = element.innerHTML.match(
+          new RegExp(`<[^>]*${match.replace(/<|>/g, "")}[^>]*>`)
+        );
+        if (originalMatch) {
+          return originalMatch[0];
+        }
+        return match;
+      });
+    }
+  );
+
+  // replace child nodes with translated content
+  element.innerHTML = translatedChildrenString;
 }
 
 function JsxObject(input) {

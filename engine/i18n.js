@@ -35,3 +35,29 @@ function addTrans(resources) {
     i18next.addResourceBundle(lang, "translation", resources[lang]);
   });
 }
+
+export const TRANSLATABLE_TAGS = [
+  "P",
+  "DIV",
+  "SPAN",
+  "H1",
+  "H2",
+  "H3",
+  "H4",
+  "H5",
+  "H6",
+  "LI",
+  "TD",
+  "TH",
+  "LABEL",
+  "BUTTON",
+  "BODY",
+  "MAIN",
+  "SECTION",
+  "ARTICLE",
+  "ASIDE",
+  "NAV",
+  "DD",
+  "DL",
+  "DT",
+];
