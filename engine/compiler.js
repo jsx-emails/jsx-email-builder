@@ -95,7 +95,10 @@ function createTempDir() {
       });
     }
   } catch (error) {
-    throw new Error("Error while creating the temp dir:\n" + error.message);
+    throw {
+      ...error,
+      message: "Error while creating the temp dir:\n" + error.message,
+    };
   }
 }
 
@@ -113,7 +116,10 @@ function createEntryFile(templatePath) {
 
     return entryFileName;
   } catch (error) {
-    throw new Error("Error while creating the entry file:\n" + error.message);
+    throw {
+      ...error,
+      message: "Error while creating the entry file:\n" + error.message,
+    };
   }
 }
 
@@ -147,7 +153,10 @@ async function TranspileAndBundle(entryFileName) {
 
     return bundleFileName;
   } catch (error) {
-    throw new Error("Error while bundling the code:\n" + error.message);
+    throw {
+      ...error,
+      message: "Error while bundling the code:\n" + error.message,
+    };
   }
 }
 
@@ -174,8 +183,10 @@ async function runBundle(bundleFileName, prettify = false) {
     }
     return { html, subject };
   } catch (error) {
-    error.message = "Error while running the bundle:\n" + error.message;
-    throw error;
+    throw {
+      ...error,
+      message: "Error while running the bundle:\n" + error.message,
+    };
   }
 }
 

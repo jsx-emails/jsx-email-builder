@@ -72,10 +72,12 @@ async function generateTranslations(params) {
 
     // for each language, create the translation file
     languages.forEach((language) => {
-      if (!language.default && language.disableTranslations) {
-        console.info(
-          `Translations are disabled for ${language.name || language.code}`
-        );
+      if (language.disableTranslations) {
+        if (!language.default) {
+          console.info(
+            `Translations are disabled for ${language.name || language.code}`
+          );
+        }
         return;
       }
       const langCode = language.code;
