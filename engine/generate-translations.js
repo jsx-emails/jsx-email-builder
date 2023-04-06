@@ -62,6 +62,7 @@ async function generateTranslations(params) {
     const templateName = path.basename(templatePath, templatesPostFix);
     const distDir = path.join(
       process.cwd(),
+      templatesDir,
       path.dirname(templateRelativePath),
       translationsDir
     );
