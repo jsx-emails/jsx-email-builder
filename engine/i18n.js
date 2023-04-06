@@ -32,7 +32,8 @@ export function trans(...params) {
 
 function addTrans(resources) {
   Object.keys(resources).forEach((lang) => {
-    i18next.addResourceBundle(lang, "translation", resources[lang]);
+    const normalizedLang = lang.replace(/([A-Z])/g, "-$1").toLowerCase();
+    i18next.addResourceBundle(normalizedLang, "translation", resources[lang]);
   });
 }
 

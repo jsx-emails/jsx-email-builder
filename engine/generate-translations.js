@@ -15,6 +15,8 @@ async function generateTranslations(params) {
   const translationsDir =
     params.translationsDir || config.translationsDir || "./translations";
   const languages = params.languages || config.languages || [];
+  const createModuleFiles =
+    params.createModuleFiles || config.createModuleFiles || false;
 
   if (languages.length === 0) {
     console.error(
@@ -50,10 +52,12 @@ async function generateTranslations(params) {
       });
 
       // 3. generate and update the translation files
-      if (texts.length === 0) {
+      if (Object.keys(texts).length === 0) {
         console.warn(`No texts for translation found in ${templatePath}`);
         return;
       }
+      const translationFileContent = JSON.stringify(texts, null, 2);
+
       // if translations directory doesn't exist, create it
       const templateName = path.basename(templatePath, templatesPostFix);
       const distDir = path.join(
@@ -64,9 +68,10 @@ async function generateTranslations(params) {
       if (!fs.existsSync(distDir)) {
         fs.mkdirSync(distDir, { recursive: true });
       }
+
       // for each language, create the translation file
       languages.forEach((language) => {
-        if (language.disableTranslations) {
+        if (!language.default && language.disableTranslations) {
           console.info(
             `Translations are disabled for ${language.name || language.code}`
           );
@@ -81,7 +86,7 @@ async function generateTranslations(params) {
           );
           return;
         }
-        fs.writeFileSync(translationFilePath, JSON.stringify(texts, null, 2));
+        fs.writeFileSync(translationFilePath, translationFileContent);
         console.log(`Translation created ${translationFilePath}`);
 
         if (subjectRequired && !compileResult.subject) {
@@ -90,11 +95,69 @@ async function generateTranslations(params) {
           );
         }
       });
+
+      // 4. create the module file
+      if (createModuleFiles) {
+        generateModuleFiles({
+          distDir,
+          templateName,
+          languages,
+        });
+      }
+
+      // 5. cleanup
+      cleanupAll();
     })
   );
+}
 
-  // 4. cleanup
-  cleanupAll();
+/**
+ * Generates the ts module file for the translations that imports all the translation files and exports them as a single object
+ * @param {Object} params
+ * @param {string} params.distDir
+ * @param {string} params.templateName
+ * @param {Array} params.languages
+ */
+function generateModuleFiles(params) {
+  const { distDir, templateName, languages } = params;
+  const moduleFileName = `${templateName}.ts`;
+  const moduleFilePath = path.join(distDir, moduleFileName);
+
+  // add the import statements
+  let moduleFileContent = languages
+    .map((language) => {
+      if (language.disableTranslations) {
+        return;
+      }
+      const langCode = language.code;
+      const translationFileName = `${templateName}.${langCode}.json`;
+      const normalizedLangCode = langCode
+        .replace(/([A-Z])/g, "-$1")
+        .toLowerCase();
+      return `import ${normalizedLangCode} from "./${translationFileName}";`;
+    })
+    .join("\n")
+    .concat("\n");
+
+  // add the export statement
+  moduleFileContent = moduleFileContent.concat(
+    `export default {
+        ${languages
+          .map((language) => {
+            if (language.disableTranslations) {
+              return;
+            }
+            const langCode = language.code;
+            const normalizedLangCode = langCode
+              .replace(/([A-Z])/g, "-$1")
+              .toLowerCase();
+            return `${normalizedLangCode},`;
+          })
+          .join("\n")} as TranslationGroup;\n`
+  );
+
+  // write the file
+  fs.writeFileSync(moduleFilePath, moduleFileContent);
 }
 
 export default generateTranslations;

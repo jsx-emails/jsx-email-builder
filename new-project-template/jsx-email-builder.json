@@ -6,7 +6,7 @@
       "name": "English",
       "code": "en",
       "default": true,
-      "disableTranslation": true
+      "disableTranslations": true
     }
   ]
 }
