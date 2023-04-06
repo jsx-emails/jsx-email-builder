@@ -104,11 +104,11 @@ async function generateTranslations(params) {
           languages,
         });
       }
-
-      // 5. cleanup
-      cleanupAll();
     })
   );
+
+  // 5. cleanup
+  cleanupAll();
 }
 
 /**
