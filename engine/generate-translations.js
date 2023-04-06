@@ -18,6 +18,10 @@ async function generateTranslations(params) {
   const languages = params.languages || config.languages || [];
   const createModuleFiles =
     params.createModuleFiles || config.createModuleFiles || false;
+  const overwriteTranslationFiles =
+    params.overwriteTranslationFiles ||
+    config.overwriteTranslationFiles ||
+    false;
 
   if (languages.length === 0) {
     console.error(
@@ -83,7 +87,7 @@ async function generateTranslations(params) {
       const langCode = language.code;
       const translationFileName = `${templateName}.${langCode}.json`;
       const translationFilePath = path.join(distDir, translationFileName);
-      if (fs.existsSync(translationFilePath)) {
+      if (!overwriteTranslationFiles && fs.existsSync(translationFilePath)) {
         console.warn(`Translation file already exists ${translationFilePath}`);
         return;
       }
