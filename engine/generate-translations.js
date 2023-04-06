@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import prettier from "prettier";
 import { getEmailTemplatesList } from "./template-finder.js";
 import { compile, cleanupAll } from "./compiler.js";
 import { getConfig } from "./config.js";
@@ -33,79 +34,73 @@ async function generateTranslations(params) {
 
   // TODO: parallelize this:
   // 2. compile them to get the texts
-  await Promise.all(
-    templates.map(async (templateRelativePath) => {
-      const templatePath = path.join(
-        process.cwd(),
-        templatesDir,
-        templateRelativePath
-      );
-      const texts = {};
-      const compileResult = await compile({
-        templatePath,
-        i18nEnabled: true, // TODO: make it configurable
-        compileAllLangs: false,
-        transCallback: (text) => {
-          texts[text] = "";
-          return text;
-        },
-      });
+  for (const templateRelativePath of templates) {
+    const templatePath = path.join(
+      process.cwd(),
+      templatesDir,
+      templateRelativePath
+    );
+    const texts = {};
+    const compileResult = await compile({
+      templatePath,
+      i18nEnabled: true, // TODO: make it configurable
+      compileAllLangs: false,
+      transCallback: (text) => {
+        texts[text] = "";
+        return text;
+      },
+    });
 
-      // 3. generate and update the translation files
-      if (Object.keys(texts).length === 0) {
-        console.warn(`No texts for translation found in ${templatePath}`);
+    // 3. generate and update the translation files
+    if (Object.keys(texts).length === 0) {
+      console.warn(`No texts for translation found in ${templatePath}`);
+      return;
+    }
+    const translationFileContent = JSON.stringify(texts, null, 2);
+
+    // if translations directory doesn't exist, create it
+    const templateName = path.basename(templatePath, templatesPostFix);
+    const distDir = path.join(
+      process.cwd(),
+      path.dirname(templateRelativePath),
+      translationsDir
+    );
+    if (!fs.existsSync(distDir)) {
+      fs.mkdirSync(distDir, { recursive: true });
+    }
+
+    // for each language, create the translation file
+    languages.forEach((language) => {
+      if (!language.default && language.disableTranslations) {
+        console.info(
+          `Translations are disabled for ${language.name || language.code}`
+        );
         return;
       }
-      const translationFileContent = JSON.stringify(texts, null, 2);
-
-      // if translations directory doesn't exist, create it
-      const templateName = path.basename(templatePath, templatesPostFix);
-      const distDir = path.join(
-        process.cwd(),
-        path.dirname(templateRelativePath),
-        translationsDir
-      );
-      if (!fs.existsSync(distDir)) {
-        fs.mkdirSync(distDir, { recursive: true });
+      const langCode = language.code;
+      const translationFileName = `${templateName}.${langCode}.json`;
+      const translationFilePath = path.join(distDir, translationFileName);
+      if (fs.existsSync(translationFilePath)) {
+        console.warn(`Translation file already exists ${translationFilePath}`);
+        return;
       }
+      fs.writeFileSync(translationFilePath, translationFileContent);
+      console.log(`Translation created ${translationFilePath}`);
 
-      // for each language, create the translation file
-      languages.forEach((language) => {
-        if (!language.default && language.disableTranslations) {
-          console.info(
-            `Translations are disabled for ${language.name || language.code}`
-          );
-          return;
-        }
-        const langCode = language.code;
-        const translationFileName = `${templateName}.${langCode}.json`;
-        const translationFilePath = path.join(distDir, translationFileName);
-        if (fs.existsSync(translationFilePath)) {
-          console.warn(
-            `Translation file already exists ${translationFilePath}`
-          );
-          return;
-        }
-        fs.writeFileSync(translationFilePath, translationFileContent);
-        console.log(`Translation created ${translationFilePath}`);
+      if (subjectRequired && !compileResult.subject) {
+        console.warn(`Subject is not defined in the template ${templatePath}.`);
+      }
+    });
 
-        if (subjectRequired && !compileResult.subject) {
-          console.warn(
-            `Subject is not defined in the template ${templatePath}.`
-          );
-        }
+    // 4. create the module file
+    if (createModuleFiles) {
+      generateModuleFiles({
+        distDir,
+        templateName,
+        languages,
       });
-
-      // 4. create the module file
-      if (createModuleFiles) {
-        generateModuleFiles({
-          distDir,
-          templateName,
-          languages,
-        });
-      }
-    })
-  );
+    }
+  }
 
   // 5. cleanup
   cleanupAll();
@@ -113,10 +108,14 @@ async function generateTranslations(params) {
 
 /**
  * Generates the ts module file for the translations that imports all the translation files and exports them as a single object
- * @param {Object} params
+ * @param {object} params
  * @param {string} params.distDir
  * @param {string} params.templateName
- * @param {Array} params.languages
+ * @param {object[]} params.languages
+ * @param {string} params.languages[].code
+ * @param {string} params.languages[].name
+ * @param {boolean} params.languages[].default
+ * @param {boolean} params.languages[].disableTranslations
  */
 function generateModuleFiles(params) {
   const { distDir, templateName, languages } = params;
@@ -131,13 +130,13 @@ function generateModuleFiles(params) {
       }
       const langCode = language.code;
       const translationFileName = `${templateName}.${langCode}.json`;
-      const normalizedLangCode = langCode
-        .replace(/([A-Z])/g, "-$1")
-        .toLowerCase();
-      return `import ${normalizedLangCode} from "./${translationFileName}";`;
+      const langCodeAsVariable = langCode.replace(/-([a-z])/g, (g) =>
+        g[1].toUpperCase()
+      );
+      return `import ${langCodeAsVariable} from "./${translationFileName}";`;
     })
     .join("\n")
-    .concat("\n");
+    .concat("\n\n");
 
   // add the export statement
   moduleFileContent = moduleFileContent.concat(
@@ -148,13 +147,18 @@ function generateModuleFiles(params) {
               return;
             }
             const langCode = language.code;
-            const normalizedLangCode = langCode
-              .replace(/([A-Z])/g, "-$1")
-              .toLowerCase();
-            return `${normalizedLangCode},`;
+            const langCodeAsVariable = langCode.replace(/-([a-z])/g, (g) =>
+              g[1].toUpperCase()
+            );
+            return `${langCodeAsVariable},`;
           })
-          .join("\n")} as TranslationGroup;\n`
+          .join("\n")}\n} as TranslationGroup;\n`
   );
+
+  // format the file
+  moduleFileContent = prettier.format(moduleFileContent, {
+    parser: "typescript",
+  });
 
   // write the file
   fs.writeFileSync(moduleFilePath, moduleFileContent);
