@@ -1,7 +1,7 @@
 import i18next from "i18next";
 
 export function setupI18n(params) {
-  const { lng = "en" } = params;
+  const { lng = "en", transCallback } = params;
   i18next.init({
     lng,
     debug: false,
@@ -12,7 +12,7 @@ export function setupI18n(params) {
     },
   });
 
-  global.trans = trans;
+  global.trans = transCallback || trans;
   global.addTrans = addTrans;
 
   return i18next;

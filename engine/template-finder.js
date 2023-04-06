@@ -1,6 +1,10 @@
 import fs from "fs";
 import path from "path";
 
+/**
+ * @param {{ templatesDir: string; templatesPostFix: string; }} params
+ * @returns {string[]}
+ */
 export function getEmailTemplatesList(params) {
   const { templatesDir, templatesPostFix } = params;
   const result = [];

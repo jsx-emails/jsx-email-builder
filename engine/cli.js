@@ -4,6 +4,7 @@ import path from "path";
 import parseArgs from "minimist";
 import startServer from "./server.js";
 import build from "./build.js";
+import generateTranslations from "./generate-translations.js";
 import { initializeNewProject } from "./init.js";
 import fs from "fs-extra";
 
@@ -20,6 +21,8 @@ function printHelp() {
   logger.log("      aliases: compile");
   logger.log("    dev: Start the dev server");
   logger.log("      aliases: start, serve");
+  logger.log("    gen-trans: Generate translation files");
+  logger.log("      aliases: generate-translations, translations, trans");
 }
 
 function printVersion() {
@@ -53,6 +56,12 @@ async function main() {
     case "serve":
       logger.log("[JSX-Email-Builder] Starting dev server...");
       await startServer(args);
+      break;
+    case "gen-trans":
+    case "generate-translations":
+    case "translations":
+    case "trans":
+      await generateTranslations(args);
       break;
     case undefined:
       logger.error("[JSX-Email-Builder] error: No command specified");

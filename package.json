@@ -1,12 +1,13 @@
 {
   "name": "jsx-email-builder",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "description": "A jsx email template builder. Supper easy and fast.",
   "type": "module",
   "scripts": {
     "new": "node engine/cli.js new new-project --templatesDir templates",
-    "start": "nodemon engine/cli.js start --port 4000 --templatesDir ./new-project-template/email-templates",
-    "build": "node engine/cli.js build --templatesDir ./new-project-template/email-templates"
+    "start": "nodemon engine/cli.js start --port 4000 --templatesDir ./new-project-template/email-templates --configDir ./new-project-template",
+    "build": "node engine/cli.js build --templatesDir ./new-project-template/email-templates --configDir ./new-project-template",
+    "trans": "node engine/cli.js trans --templatesDir ./new-project-template/email-templates --configDir ./new-project-template"
   },
   "bin": {
     "jsx-email-builder": "engine/cli.js"

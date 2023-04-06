@@ -1,4 +1,12 @@
 {
   "subjectRequired": true,
-  "templatesDir": "email-templates"
+  "templatesDir": "email-templates",
+  "languages": [
+    {
+      "name": "English",
+      "code": "en",
+      "default": true,
+      "disableTranslation": true
+    }
+  ]
 }

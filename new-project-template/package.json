@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "start": "jsx-email-builder start",
-    "build": "jsx-email-builder build"
+    "build": "jsx-email-builder build",
+    "gen-trans": "jsx-email-builder gen-tans"
   },
   "keywords": [
     "email templates"
   ],
   "devDependencies": {
-    "jsx-email-builder": "^0.9.1"
+    "jsx-email-builder": "^0.10.0"
   },
   "private": true
 }
