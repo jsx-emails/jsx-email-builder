@@ -4,6 +4,7 @@ import prettier from "prettier";
 import { getEmailTemplatesList } from "./template-finder.js";
 import { compile, cleanupAll } from "./compiler.js";
 import { getConfig } from "./config.js";
+import chalk from "chalk";
 
 async function generateTranslations(params) {
   const config = getConfig();
@@ -22,12 +23,27 @@ async function generateTranslations(params) {
     params.overwriteTranslationFiles ||
     config.overwriteTranslationFiles ||
     false;
+  const translationKeyAsDefaultValue =
+    params.translationKeyAsDefaultValue ||
+    config.translationKeyAsDefaultValue ||
+    false;
 
   if (languages.length === 0) {
     console.error(
-      "No languages specified. Please specify the languages in the config file or pass them as a parameter"
+      chalk.red.bold("Error: No languages specified. \n"),
+      "Hint: Please specify the languages in the config file or pass them as a parameter"
     );
     process.exit(1);
+  }
+
+  const languagesToTranslate = languages.filter(
+    (language) => !language.disableTranslations
+  );
+  if (languagesToTranslate.length === 0) {
+    console.info(
+      chalk.yellow.bold("Translations are disabled for all languages.")
+    );
+    return;
   }
 
   // 1. get all the templates
@@ -39,6 +55,10 @@ async function generateTranslations(params) {
   // TODO: parallelize this:
   // 2. compile them to get the texts
   for (const templateRelativePath of templates) {
+    console.log(
+      chalk.magenta.bold("Processing template: "),
+      chalk.bold(templateRelativePath)
+    );
     const templatePath = path.join(
       process.cwd(),
       templatesDir,
@@ -50,14 +70,14 @@ async function generateTranslations(params) {
       i18nEnabled: true, // TODO: make it configurable
       compileAllLangs: false,
       transCallback: (text) => {
-        texts[text] = "";
+        texts[text] = translationKeyAsDefaultValue ? text : "";
         return text;
       },
     });
 
     // 3. generate and update the translation files
     if (Object.keys(texts).length === 0) {
-      console.warn(`No texts for translation found in ${templatePath}`);
+      console.warn(chalk.yellow.bold("No texts for translation found!"));
       return;
     }
     const translationFileContent = JSON.stringify(texts, null, 2);
@@ -88,15 +108,24 @@ async function generateTranslations(params) {
       const translationFileName = `${templateName}.${langCode}.json`;
       const translationFilePath = path.join(distDir, translationFileName);
       if (!overwriteTranslationFiles && fs.existsSync(translationFilePath)) {
-        console.warn(`Translation file already exists ${translationFilePath}`);
+        console.warn(
+          chalk.yellow.bold("Translation file already exists: "),
+          translationFilePath
+        );
         return;
       }
-      fs.writeFileSync(translationFilePath, translationFileContent);
-      console.log(`Translation created ${translationFilePath}`);
 
       if (subjectRequired && !compileResult.subject) {
-        console.warn(`Subject is not defined in the template ${templatePath}.`);
+        console.warn(
+          chalk.yellow.bold("Subject is not defined for the template")
+        );
       }
+
+      fs.writeFileSync(translationFilePath, translationFileContent);
+      console.log(
+        chalk.green.bold("Translation created: "),
+        translationFilePath
+      );
     });
 
     // 4. create the module file
@@ -169,6 +198,7 @@ function generateModuleFiles(params) {
 
   // write the file
   fs.writeFileSync(moduleFilePath, moduleFileContent);
+  console.log(chalk.green.bold("Module created: "), moduleFilePath);
 }
 
 export default generateTranslations;

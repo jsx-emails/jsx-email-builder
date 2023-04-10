@@ -51,9 +51,6 @@ function setSubject(input) {
         translatedSubject.length
     );
   }
-  if (translatedSubject.length === 0) {
-    throw new Error("Subject must not be empty.");
-  }
 
   const invalidCharacters = /[\n\r\t\0\b]/;
   if (invalidCharacters.test(translatedSubject)) {
