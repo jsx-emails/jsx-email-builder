@@ -1,5 +1,6 @@
 import fs from "fs-extra";
 import path from "path";
+import chalk from "chalk";
 import { getEmailTemplatesList } from "./template-finder.js";
 import { compile, cleanupAll } from "./compiler.js";
 import { getConfig } from "./config.js";
@@ -13,12 +14,30 @@ async function build(params) {
     params.templatesPostFix || config.templatesPostFix || ".template.tsx";
   const subjectRequired =
     params.subjectRequired || config.subjectRequired || true;
+  const templateNameMaxLength =
+    params.templateNameMaxLength || config.templateNameMaxLength || null;
 
   // 1. get all the templates
   const templates = getEmailTemplatesList({
     templatesDir,
     templatesPostFix,
   });
+
+  // 2. check template names length
+  if (templateNameMaxLength) {
+    templates.forEach((template) => {
+      const templateName = path.basename(template, templatesPostFix);
+      if (templateName.length > templateNameMaxLength) {
+        console.error(
+          chalk.red.bold("Error: "),
+          chalk.red(
+            `"${templateName}" is too long for a template name(${templateName.length} chars). Max length is ${templateNameMaxLength}.`
+          )
+        );
+        process.exit(1);
+      }
+    });
+  }
 
   // 2. compile them in parallel
   let templatesChunks = [];

@@ -1,6 +1,6 @@
 {
   "name": "jsx-email-builder",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "description": "A jsx email template builder. Supper easy and fast.",
   "type": "module",
   "scripts": {
