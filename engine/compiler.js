@@ -176,6 +176,24 @@ async function runBundle(bundleFileName, prettify = false) {
 
     const subject = global.outputs?.subject;
     const doctype = global.jsx.doctype || "<!DOCTYPE html>";
+
+    // set subject as title of the html:
+    if (subject && global.jsx.output.html) {
+      const title = global.jsx.output.html.querySelector("title");
+      if (title) {
+        title.innerHTML = subject;
+      } else {
+        const head = global.jsx.output.html.querySelector("head");
+        if (head) {
+          const { window } = global.jsx.dom;
+          const { document } = window;
+          const title = document.createElement("title");
+          title.innerHTML = subject;
+          head.appendChild(title);
+        }
+      }
+    }
+
     const html = `${doctype}\n${global.jsx.output.html.outerHTML}`;
 
     if (prettify) {
