@@ -16,6 +16,7 @@ async function build(params) {
     params.subjectRequired || config.subjectRequired || true;
   const templateNameMaxLength =
     params.templateNameMaxLength || config.templateNameMaxLength || null;
+  const languages = params.languages || config.languages || [];
 
   // 1. get all the templates
   const templates = getEmailTemplatesList({
@@ -39,7 +40,7 @@ async function build(params) {
     });
   }
 
-  // 2. compile them in parallel
+  // 3. compile them in parallel
   let templatesChunks = [];
   const chunkSize = 1; // Iman: combination of parallel threads and with global values like subject can introduce issues
   for (let i = 0; i < templates.length; i += chunkSize) {
@@ -59,7 +60,7 @@ async function build(params) {
     });
     const results = await Promise.all(compilePromises);
 
-    // 3. write the results to the dist folder
+    // 4. write the results to the dist folder
     results.forEach((compileResult, index) => {
       const templatePath = templatesChunks[index];
       // if html directory doesn't exist, create it
@@ -70,10 +71,13 @@ async function build(params) {
       if (!fs.existsSync(distDir)) {
         fs.mkdirSync(distDir, { recursive: true });
       }
+      const defaultLang = languages.find((lang) => lang.default);
+      const langDir = defaultLang?.langDir ? defaultLang.code : "";
       const htmlRelativePath = templatePath.replace(templatesPostFix, ".html");
       const htmlAbsolutePath = path.join(
         process.cwd(),
-        `./dist/${htmlRelativePath}`
+        `./dist/${htmlRelativePath}`,
+        langDir
       );
       fs.writeFileSync(htmlAbsolutePath, compileResult.html);
 
@@ -125,7 +129,7 @@ async function build(params) {
     });
   }
 
-  // 4. cleanup
+  // 5. cleanup
   cleanupAll();
 }
 
