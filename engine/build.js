@@ -63,25 +63,23 @@ async function build(params) {
     // 4. write the results to the dist folder
     results.forEach((compileResult, index) => {
       const templatePath = templatesChunks[index];
-      // if html directory doesn't exist, create it
-      const distDir = path.join(
+      const templateName = path.basename(templatePath, templatesPostFix);
+
+      const defaultLang = languages.find((lang) => lang.default);
+      const langDir = defaultLang?.langDir ? defaultLang.code : "";
+      let htmlDir = path.join(
         process.cwd(),
         `./dist/${path.dirname(templatePath)}`
       );
-      if (!fs.existsSync(distDir)) {
-        fs.mkdirSync(distDir, { recursive: true });
+      if (langDir) {
+        htmlDir = path.join(htmlDir, langDir);
       }
-      const defaultLang = languages.find((lang) => lang.default);
-      const langDir = defaultLang?.langDir ? defaultLang.code : "";
-      const htmlRelativePath = templatePath.replace(templatesPostFix, ".html");
-      const htmlAbsolutePath = path.join(
-        process.cwd(),
-        `./dist/${htmlRelativePath}`,
-        langDir
-      );
+      const htmlAbsolutePath = path.join(htmlDir, templateName + ".html");
+      if (!fs.existsSync(htmlDir)) {
+        fs.mkdirSync(htmlDir, { recursive: true });
+      }
       fs.writeFileSync(htmlAbsolutePath, compileResult.html);
 
-      const templateName = path.basename(templatePath, templatesPostFix);
       if (subjectRequired) {
         if (!compileResult.subject) {
           throw new Error(
