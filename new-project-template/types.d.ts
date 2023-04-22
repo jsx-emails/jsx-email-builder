@@ -42,6 +42,8 @@ declare function variable(name: string): string;
 
 declare function setSubject(name: string): void;
 
+declare function addInternalStyles(...styles: string[]): void;
+
 /*****************************************************************
  *  Translation types
  *****************************************************************/

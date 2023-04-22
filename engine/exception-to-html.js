@@ -4,7 +4,7 @@ export function exceptionToHtml(e) {
     /'([./].*?)'/g,
     "<span class=\"string\">'$1'</span>"
   );
-  const stackWithoutMessage = e.stack.replace(e.message, "");
+  const stackWithoutMessage = e.stack?.replace(e.message, "");
 
   return `<!DOCTYPE html>
   <html>

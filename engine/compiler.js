@@ -176,6 +176,7 @@ async function runBundle(bundleFileName, prettify = false) {
 
     const subject = global.outputs?.subject;
     const doctype = global.jsx.doctype || "<!DOCTYPE html>";
+    const { document } = global.jsx.dom.window;
 
     // set subject as title of the html:
     if (subject && global.jsx.output.html) {
@@ -185,12 +186,21 @@ async function runBundle(bundleFileName, prettify = false) {
       } else {
         const head = global.jsx.output.html.querySelector("head");
         if (head) {
-          const { window } = global.jsx.dom;
-          const { document } = window;
           const title = document.createElement("title");
           title.innerHTML = subject;
           head.appendChild(title);
         }
+      }
+    }
+
+    // if any internal styles, add them to the head
+    if (global.outputs?.internalStyles.size && global.jsx.output.html) {
+      const head = global.jsx.output.html.querySelector("head");
+      if (head) {
+        const style = document.createElement("style");
+        style.setAttribute("type", "text/css");
+        style.innerHTML = Array.from(global.outputs.internalStyles).join("\n");
+        head.appendChild(style);
       }
     }
 

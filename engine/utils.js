@@ -2,6 +2,9 @@ import { trans } from "./i18n.js";
 
 export function setupUtils() {
   global.variable = variable;
+  global.setSubject = setSubject;
+  global.addInternalStyles = addInternalStyles;
+  clearInternalStyles();
 }
 
 function variable(name) {
@@ -61,4 +64,23 @@ function setSubject(input) {
 
   global.outputs = { ...global.outputs, subject: translatedSubject };
 }
-global.setSubject = setSubject;
+
+/******************************************************
+ * Styling utils
+ * ***************************************************/
+
+// todo: bug: for each component, addInternalStyles gets called twice
+function addInternalStyles(...styles) {
+  for (const style of styles) {
+    if (typeof style !== "string") {
+      throw new Error(
+        "addInternalStyles only accepts strings. Instead got: " + style
+      );
+    }
+    global.outputs.internalStyles.add(style);
+  }
+}
+
+function clearInternalStyles() {
+  global.outputs = { ...global.outputs, internalStyles: new Set() };
+}
