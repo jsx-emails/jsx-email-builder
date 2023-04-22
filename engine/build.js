@@ -17,6 +17,8 @@ async function build(params) {
   const templateNameMaxLength =
     params.templateNameMaxLength || config.templateNameMaxLength || null;
   const languages = params.languages || config.languages || [];
+  const onlyDefaultLang =
+    params.onlyDefaultLang || config.onlyDefaultLang || false;
 
   // 1. get all the templates
   const templates = getEmailTemplatesList({
@@ -54,7 +56,7 @@ async function build(params) {
       return compile({
         templatePath,
         i18nEnabled: true, // TODO: make it configurable
-        compileAllLangs: true,
+        compileAllLangs: !onlyDefaultLang,
         prettify: true, // TODO: make it configurable
       });
     });
