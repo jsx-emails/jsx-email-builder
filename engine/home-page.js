@@ -1,4 +1,5 @@
 import { getRoutesOfTemplates } from "./router.js";
+import { getConfig } from "./config.js";
 
 function groupRoutesByFolder(routes) {
   const routesByFolder = {};
@@ -19,6 +20,10 @@ function groupRoutesByFolder(routes) {
  */
 export function registerHomeRoute(params) {
   const { httpServer, templatesDir, templatesPostFix } = params;
+
+  const config = getConfig();
+  const ignoreDirsContainingTemplates =
+    config.homePage?.ignoreDirsContainingTemplates || false;
 
   httpServer.get("/", (req, res) => {
     const routes = getRoutesOfTemplates({ templatesDir, templatesPostFix });
@@ -94,7 +99,15 @@ export function registerHomeRoute(params) {
                 <ol>
                   ${routesByFolder[folder]
                     .map((route) => {
-                      let templateName = route.replace(/[-_]/g, " ");
+                      let templateName = route;
+                      if (ignoreDirsContainingTemplates) {
+                        // remove last folder from route
+                        templateName = templateName.replace(
+                          /[/]?([^/]+\/)([^/]+)$/,
+                          "$2"
+                        );
+                      }
+                      templateName = templateName.replace(/[-_]/g, " ");
                       templateName = templateName.replace(/[\\/]/g, " / ");
                       // capitalize first letter of each word
                       templateName = templateName.replace(
