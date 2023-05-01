@@ -1,5 +1,3 @@
-import { trans } from "./i18n.js";
-
 export function setupUtils() {
   global.variable = variable;
   global.setSubject = setSubject;
@@ -33,7 +31,7 @@ global.html = html;
  * Subject utils
  * ***************************************************/
 function setSubject(input) {
-  const translatedSubject = trans(input);
+  const translatedSubject = global.trans(input);
   // if (global.outputs?.subject) {
   //   throw new Error(
   //     "Subject is already set to: " +

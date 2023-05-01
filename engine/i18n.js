@@ -18,7 +18,7 @@ export function setupI18n(params) {
   return i18next;
 }
 
-export function trans(...params) {
+function trans(...params) {
   const defaultLang = "en"; // todo: make it configurable
   const translateDefaultLang = false; // todo: make it configurable
   const currentLang = i18next.language;
