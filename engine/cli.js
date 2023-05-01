@@ -49,19 +49,19 @@ async function main() {
       break;
     case "build":
     case "compile":
-      await build(args);
+      await build();
       break;
     case "dev":
     case "start":
     case "serve":
       logger.log("[JSX-Email-Builder] Starting dev server...");
-      await startServer(args);
+      await startServer();
       break;
     case "gen-trans":
     case "generate-translations":
     case "translations":
     case "trans":
-      await generateTranslations(args);
+      await generateTranslations();
       break;
     case undefined:
       logger.error("[JSX-Email-Builder] error: No command specified");

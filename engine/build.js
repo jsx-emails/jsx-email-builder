@@ -6,30 +6,24 @@ import { compile, cleanupAll } from "./compiler.js";
 import { getConfig } from "./config.js";
 import createSubjectTemplate from "./subject-creator.js";
 
-async function build(params) {
-  const config = getConfig();
-  const templatesDir =
-    params.templatesDir || config.templatesDir || "./email-templates";
-  const templatesPostFix =
-    params.templatesPostFix || config.templatesPostFix || ".template.tsx";
-  const subjectRequired =
-    params.subjectRequired || config.subjectRequired || true;
-  const templateNameMaxLength =
-    params.templateNameMaxLength || config.templateNameMaxLength || null;
-  const languages = params.languages || config.languages || [];
-  const onlyDefaultLang =
-    params.onlyDefaultLang || config.onlyDefaultLang || false;
+async function build() {
+  const {
+    templates: {
+      templatesDir,
+      templatesPostfix,
+      templateNameMaxLength,
+      subjectRequired,
+    },
+    translation: { languages, onlyDefaultLang },
+  } = getConfig();
 
   // 1. get all the templates
-  const templates = getEmailTemplatesList({
-    templatesDir,
-    templatesPostFix,
-  });
+  const templates = getEmailTemplatesList();
 
   // 2. check template names length
   if (templateNameMaxLength) {
     templates.forEach((template) => {
-      const templateName = path.basename(template, templatesPostFix);
+      const templateName = path.basename(template, templatesPostfix);
       if (templateName.length > templateNameMaxLength) {
         console.error(
           chalk.red.bold("Error: "),
@@ -65,7 +59,7 @@ async function build(params) {
     // 4. write the results to the dist folder
     results.forEach((compileResult, index) => {
       const templatePath = templatesChunks[index];
-      const templateName = path.basename(templatePath, templatesPostFix);
+      const templateName = path.basename(templatePath, templatesPostfix);
 
       const defaultLang = languages.find((lang) => lang.default);
       const langDir = defaultLang?.langDir ? defaultLang.code : "";
@@ -99,7 +93,7 @@ async function build(params) {
       Object.keys(compileResult.localized).forEach((lang) => {
         // put the localized html files in a subfolder with the language name:
         const localizedHtmlRelativePath = templatePath
-          .replace(templatesPostFix, ".html")
+          .replace(templatesPostfix, ".html")
           .replace(/([^/]+)$/, `${lang}/$1`);
         const localizedHtmlAbsolutePath = path.join(
           process.cwd(),

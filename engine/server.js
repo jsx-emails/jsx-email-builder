@@ -17,34 +17,34 @@ import { getConfig } from "./config.js";
 
 function getHttpServer(params) {
   const { app } = params;
-  const config = getConfig();
-  const httpsEnabled = config.httpsEnabled;
+  const { server: serverConfig } = getConfig();
+  const httpsEnabled = serverConfig.httpsEnabled;
 
   if (!httpsEnabled) {
     const httpServer = http.createServer(app);
     return httpServer;
   }
 
-  if (!config.httpsKeyPath) {
+  if (!serverConfig.httpsKeyPath) {
     throw new Error(
       "'httpsKeyPath' is required. Please add it to the jsx-email-builder.json file"
     );
   }
-  if (!config.httpsCertPath) {
+  if (!serverConfig.httpsCertPath) {
     throw new Error(
       "'httpsCertPath' is required.  Please add it to the jsx-email-builder.json file"
     );
   }
-  const httpsKeyPath = path.join(process.cwd(), config.httpsKeyPath);
-  const httpsCertPath = path.join(process.cwd(), config.httpsCertPath);
+  const httpsKeyPath = path.join(process.cwd(), serverConfig.httpsKeyPath);
+  const httpsCertPath = path.join(process.cwd(), serverConfig.httpsCertPath);
   if (!fs.existsSync(httpsKeyPath)) {
     throw new Error(
-      `The file specified in 'httpsKeyPath' doesn't exist: ${config.httpsKeyPath}`
+      `The file specified in 'httpsKeyPath' doesn't exist: ${serverConfig.httpsKeyPath}`
     );
   }
   if (!fs.existsSync(httpsCertPath)) {
     throw new Error(
-      `The file specified in 'httpsCertPath' doesn't exist: ${config.httpsCertPath}`
+      `The file specified in 'httpsCertPath' doesn't exist: ${serverConfig.httpsCertPath}`
     );
   }
   const httpServer = https.createServer(
@@ -57,16 +57,12 @@ function getHttpServer(params) {
   return httpServer;
 }
 
-async function startServer(params) {
-  const config = getConfig();
+async function startServer() {
+  const {
+    templates: { templatesDir, templatesPostfix },
+    server: { port, componentsOutsideTemplatesDirPaths },
+  } = getConfig();
   const app = express();
-  const port = params.port || config.port || 3000;
-  const templatesDir =
-    params.templatesDir || config.templatesDir || "./email-templates";
-  const templatesPostFix =
-    params.templatesPostFix || config.templatesPostFix || ".template.tsx";
-  const componentsOutsideTemplatesDirPaths =
-    config.componentsOutsideTemplatesDirPaths || [];
 
   const httpServer = getHttpServer({ app });
 
@@ -75,7 +71,7 @@ async function startServer(params) {
   await registerRoutes(
     {
       templatesDir,
-      templatesPostFix,
+      templatesPostfix,
       httpServer: app,
     },
     handleRequest
@@ -84,7 +80,7 @@ async function startServer(params) {
   registerHomeRoute({
     httpServer: app,
     templatesDir,
-    templatesPostFix,
+    templatesPostfix,
   });
 
   watchForChanges({
@@ -98,15 +94,15 @@ async function startServer(params) {
 }
 
 /**
- * @param {{ req: express.Request; res: express.Response; templatesDir: string; templatesPostFix: string; }} context
+ * @param {{ req: express.Request; res: express.Response; templatesDir: string; templatesPostfix: string; }} context
  */
 async function handleRequest(context) {
-  const { req, res, templatesDir, templatesPostFix } = context;
+  const { req, res, templatesDir, templatesPostfix } = context;
   try {
     const templateRelativePath = mapRouteToTemplate({
       req,
       templatesDir,
-      templatesPostFix,
+      templatesPostfix,
     });
     const templatePath = path.join(process.cwd(), templateRelativePath);
 

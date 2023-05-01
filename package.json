@@ -1,6 +1,6 @@
 {
   "name": "jsx-email-builder",
-  "version": "0.17.1",
+  "version": "0.18.0",
   "description": "A jsx email template builder. Supper easy and fast.",
   "type": "module",
   "scripts": {
@@ -30,6 +30,7 @@
     "html-escaper": "^3.0.3",
     "i18next": "^22.4.11",
     "jsdom": "^21.1.1",
+    "lodash-es": "^4.17.21",
     "minimist": "^1.2.8",
     "prettier": "^2.8.7",
     "swc-loader": "^0.2.3",

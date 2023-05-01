@@ -16,17 +16,17 @@ function groupRoutesByFolder(routes) {
 }
 
 /**
- * @param {{ httpServer: import('express').Express; templatesDir: string; templatesPostFix: string; }} params
+ * @param {{ httpServer: import('express').Express; templatesDir: string; templatesPostfix: string; }} params
  */
 export function registerHomeRoute(params) {
-  const { httpServer, templatesDir, templatesPostFix } = params;
+  const { httpServer } = params;
 
-  const config = getConfig();
-  const ignoreDirsContainingTemplates =
-    config.homePage?.ignoreDirsContainingTemplates || false;
+  const {
+    homePage: { ignoreDirsContainingTemplates },
+  } = getConfig();
 
   httpServer.get("/", (req, res) => {
-    const routes = getRoutesOfTemplates({ templatesDir, templatesPostFix });
+    const routes = getRoutesOfTemplates();
 
     const routesByFolder = groupRoutesByFolder(routes);
 

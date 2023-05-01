@@ -4,8 +4,10 @@ import { getConfig } from "./config.js";
 
 export async function createSubjectTemplate(params) {
   const { templateDir, emailTemplateName, subject } = params;
+  const {
+    templates: { subjectPostfix },
+  } = getConfig();
 
-  const subjectPostfix = getConfig().subjectPostfix || "_subject";
   const subjectTemplatePath = path.join(
     templateDir,
     emailTemplateName + subjectPostfix + ".html"

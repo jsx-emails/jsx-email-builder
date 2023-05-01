@@ -6,27 +6,17 @@ import { compile, cleanupAll } from "./compiler.js";
 import { getConfig } from "./config.js";
 import chalk from "chalk";
 
-async function generateTranslations(params) {
-  const config = getConfig();
-  const templatesDir =
-    params.templatesDir || config.templatesDir || "./email-templates";
-  const templatesPostFix =
-    params.templatesPostFix || config.templatesPostFix || ".template.tsx";
-  const subjectRequired =
-    params.subjectRequired || config.subjectRequired || true;
-  const translationsDir =
-    params.translationsDir || config.translationsDir || "./translations";
-  const languages = params.languages || config.languages || [];
-  const createModuleFiles =
-    params.createModuleFiles || config.createModuleFiles || false;
-  const overwriteTranslationFiles =
-    params.overwriteTranslationFiles ||
-    config.overwriteTranslationFiles ||
-    false;
-  const translationKeyAsDefaultValue =
-    params.translationKeyAsDefaultValue ||
-    config.translationKeyAsDefaultValue ||
-    false;
+async function generateTranslations() {
+  const {
+    templates: { templatesDir, templatesPostfix, subjectRequired },
+    translation: {
+      languages,
+      translationsDir,
+      createModuleFiles,
+      translationKeyAsDefaultValue,
+      overwriteTranslationFiles,
+    },
+  } = getConfig();
 
   if (languages.length === 0) {
     console.error(
@@ -47,10 +37,7 @@ async function generateTranslations(params) {
   }
 
   // 1. get all the templates
-  const templates = getEmailTemplatesList({
-    templatesDir,
-    templatesPostFix,
-  });
+  const templates = getEmailTemplatesList();
 
   // TODO: parallelize this:
   // 2. compile them to get the texts
@@ -83,7 +70,7 @@ async function generateTranslations(params) {
     const translationFileContent = JSON.stringify(texts, null, 2);
 
     // if translations directory doesn't exist, create it
-    const templateName = path.basename(templatePath, templatesPostFix);
+    const templateName = path.basename(templatePath, templatesPostfix);
     const distDir = path.join(
       process.cwd(),
       templatesDir,

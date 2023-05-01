@@ -12,7 +12,7 @@
     "email templates"
   ],
   "devDependencies": {
-    "jsx-email-builder": "^0.17.1"
+    "jsx-email-builder": "^0.18.0"
   },
   "private": true
 }

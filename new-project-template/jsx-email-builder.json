@@ -1,12 +1,16 @@
 {
-  "subjectRequired": true,
-  "templatesDir": "email-templates",
-  "languages": [
-    {
-      "name": "English",
-      "code": "en",
-      "default": true,
-      "disableTranslations": true
-    }
-  ]
+  "templates": {
+    "templatesDir": "email-templates",
+    "subjectRequired": true
+  },
+  "translation": {
+    "languages": [
+      {
+        "name": "English",
+        "code": "en",
+        "default": true,
+        "disableTranslations": true
+      }
+    ]
+  }
 }
