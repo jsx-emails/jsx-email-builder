@@ -37,8 +37,10 @@ function getDefaultConfig() {
       languages: [],
       translationsDir: "./translations",
       createModuleFiles: false,
-      overwriteTranslationFiles: false,
+      keepUnmatchedTranslations: true,
       translationKeyAsDefaultValue: false,
+      appendNewLineAtTheEndOfTranslationFiles: true,
+      commonTranslationsDirs: [],
       onlyDefaultLang: false,
     },
     server: {

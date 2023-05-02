@@ -5,6 +5,7 @@ import { getEmailTemplatesList } from "./template-finder.js";
 import { compile, cleanupAll } from "./compiler.js";
 import { getConfig } from "./config.js";
 import chalk from "chalk";
+import { omit } from "lodash";
 
 async function generateTranslations() {
   const {
@@ -12,9 +13,11 @@ async function generateTranslations() {
     translation: {
       languages,
       translationsDir,
+      commonTranslationsDirs,
       createModuleFiles,
       translationKeyAsDefaultValue,
-      overwriteTranslationFiles,
+      keepUnmatchedTranslations,
+      appendNewLineAtTheEndOfTranslationFiles,
     },
   } = getConfig();
 
@@ -34,6 +37,23 @@ async function generateTranslations() {
       chalk.yellow.bold("Translations are disabled for all languages.")
     );
     return;
+  }
+
+  if (!keepUnmatchedTranslations) {
+    console.warn(
+      chalk.yellow.bold("Warning: "),
+      "If you have existing translation files, they will be overwritten.",
+      "Do you want to continue? (y/n)"
+    );
+    const answer = await new Promise((resolve) => {
+      process.stdin.once("data", (data) => {
+        resolve(data.toString().trim().toLowerCase());
+      });
+    });
+    if (answer !== "y" && answer !== "yes") {
+      console.log(chalk.yellow.bold("Aborted."));
+      process.exit(0);
+    }
   }
 
   // 1. get all the templates
@@ -67,7 +87,50 @@ async function generateTranslations() {
       console.warn(chalk.yellow.bold("No texts for translation found!"));
       return;
     }
-    const translationFileContent = JSON.stringify(texts, null, 2);
+
+    if (subjectRequired && !compileResult.subject) {
+      console.error(chalk.red.bold("Subject is not defined for the template"));
+      process.exit(1);
+    }
+
+    // if common translations directories are specified, get the common translations
+    const commonTranslations = {};
+    if (commonTranslationsDirs.length > 0) {
+      for (const commonTranslationsDir of commonTranslationsDirs) {
+        const commonTranslationsDirPath = path.join(
+          process.cwd(),
+          commonTranslationsDir
+        );
+        if (fs.existsSync(commonTranslationsDirPath)) {
+          const commonTranslationsFile = fs
+            .readdirSync(commonTranslationsDirPath)
+            .find((file) => path.extname(file) === ".json");
+          if (!commonTranslationsFile) {
+            console.warn(
+              chalk.yellow.bold("Warning:"),
+              `No translation file found in '${commonTranslationsDirPath}' while looking for common translations.`
+            );
+            continue;
+          }
+          const commonTranslationsFilePath = path.join(
+            commonTranslationsDirPath,
+            commonTranslationsFile
+          );
+          const commonTranslationsFileContent = fs.readFileSync(
+            commonTranslationsFilePath,
+            "utf8"
+          );
+          const commonTranslationsFileContentParsed = JSON.parse(
+            commonTranslationsFileContent
+          );
+          Object.keys(commonTranslationsFileContentParsed).forEach((key) => {
+            commonTranslations[key] = true;
+          });
+        }
+      }
+    }
+    const commonTranslationsKeys = Object.keys(commonTranslations);
+    const textsWithoutCommonTranslations = omit(texts, commonTranslationsKeys);
 
     // if translations directory doesn't exist, create it
     const templateName = path.basename(templatePath, templatesPostfix);
@@ -86,7 +149,9 @@ async function generateTranslations() {
       if (language.disableTranslations) {
         if (!language.default) {
           console.info(
-            `Translations are disabled for ${language.name || language.code}`
+            `Info: Translations are disabled for ${
+              language.name || language.code
+            }`
           );
         }
         return;
@@ -94,23 +159,42 @@ async function generateTranslations() {
       const langCode = language.code;
       const translationFileName = `${templateName}.${langCode}.json`;
       const translationFilePath = path.join(distDir, translationFileName);
-      if (!overwriteTranslationFiles && fs.existsSync(translationFilePath)) {
-        console.warn(
-          chalk.yellow.bold("Translation file already exists: "),
-          translationFilePath
+
+      // if the translation file exists, update it
+      if (fs.existsSync(translationFilePath)) {
+        console.info("Info: Translation file exists");
+        const existingTranslations = JSON.parse(
+          fs.readFileSync(translationFilePath, "utf8")
         );
+        const newTranslations = {};
+        Object.keys(textsWithoutCommonTranslations).forEach((key) => {
+          newTranslations[key] = textsWithoutCommonTranslations[key] || "";
+        });
+        if (keepUnmatchedTranslations) {
+          Object.keys(existingTranslations).forEach((key) => {
+            if (!textsWithoutCommonTranslations[key]) {
+              newTranslations[key] = existingTranslations[key];
+            }
+          });
+        }
+        let translationFileContent = JSON.stringify(newTranslations, null, 2);
+        translationFileContent = appendNewLineAtTheEndOfTranslationFiles
+          ? translationFileContent.concat("\n")
+          : translationFileContent;
+        fs.writeFileSync(translationFilePath, translationFileContent);
+        console.log(chalk.green.bold("Translation file updated."));
         return;
       }
 
-      if (subjectRequired && !compileResult.subject) {
-        console.warn(
-          chalk.yellow.bold("Subject is not defined for the template")
-        );
-      }
-
+      // if the translation file doesn't exist, create it
+      let translationFileContent =
+        JSON.stringify(textsWithoutCommonTranslations, null, 2) + "\n";
+      translationFileContent = appendNewLineAtTheEndOfTranslationFiles
+        ? translationFileContent.concat("\n")
+        : translationFileContent;
       fs.writeFileSync(translationFilePath, translationFileContent);
       console.log(
-        chalk.green.bold("Translation created: "),
+        chalk.green.bold("Translation file created: "),
         translationFilePath
       );
     });
