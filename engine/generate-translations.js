@@ -168,13 +168,15 @@ async function generateTranslations() {
         );
         const newTranslations = {};
         Object.keys(textsWithoutCommonTranslations).forEach((key) => {
-          newTranslations[key] = textsWithoutCommonTranslations[key] || "";
+          newTranslations[key] = existingTranslations[key] || "";
         });
         if (keepUnmatchedTranslations) {
-          Object.keys(existingTranslations).forEach((key) => {
-            if (!textsWithoutCommonTranslations[key]) {
-              newTranslations[key] = existingTranslations[key];
-            }
+          const unmatchedTranslations = omit(
+            existingTranslations,
+            Object.keys(textsWithoutCommonTranslations)
+          );
+          Object.keys(unmatchedTranslations).forEach((key) => {
+            newTranslations[key] = existingTranslations[key];
           });
         }
         let translationFileContent = JSON.stringify(newTranslations, null, 2);
