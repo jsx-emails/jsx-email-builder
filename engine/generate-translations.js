@@ -5,7 +5,7 @@ import { getEmailTemplatesList } from "./template-finder.js";
 import { compile, cleanupAll } from "./compiler.js";
 import { getConfig } from "./config.js";
 import chalk from "chalk";
-import { omit } from "lodash";
+import { omit } from "lodash-es";
 
 async function generateTranslations() {
   const {
