@@ -38,6 +38,7 @@ function getDefaultConfig() {
       translationsDir: "./translations",
       createModuleFiles: false,
       keepUnmatchedTranslations: true,
+      confirmUnmatchedTranslationsRemoval: true,
       translationKeyAsDefaultValue: false,
       appendNewLineAtTheEndOfTranslationFiles: true,
       commonTranslationsDirs: [],

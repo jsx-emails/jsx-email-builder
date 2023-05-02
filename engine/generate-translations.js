@@ -17,6 +17,7 @@ async function generateTranslations() {
       createModuleFiles,
       translationKeyAsDefaultValue,
       keepUnmatchedTranslations,
+      confirmUnmatchedTranslationsRemoval,
       appendNewLineAtTheEndOfTranslationFiles,
     },
   } = getConfig();
@@ -39,7 +40,7 @@ async function generateTranslations() {
     return;
   }
 
-  if (!keepUnmatchedTranslations) {
+  if (!keepUnmatchedTranslations && confirmUnmatchedTranslationsRemoval) {
     console.warn(
       chalk.yellow.bold("Warning: "),
       "If you have existing translation files, they will be overwritten.",
@@ -50,6 +51,7 @@ async function generateTranslations() {
         resolve(data.toString().trim().toLowerCase());
       });
     });
+    process.stdin.pause();
     if (answer !== "y" && answer !== "yes") {
       console.log(chalk.yellow.bold("Aborted."));
       process.exit(0);
@@ -162,10 +164,11 @@ async function generateTranslations() {
 
       // if the translation file exists, update it
       if (fs.existsSync(translationFilePath)) {
-        console.info("Info: Translation file exists");
-        const existingTranslations = JSON.parse(
-          fs.readFileSync(translationFilePath, "utf8")
+        const existingTranslationFileContent = fs.readFileSync(
+          translationFilePath,
+          "utf8"
         );
+        const existingTranslations = JSON.parse(existingTranslationFileContent);
         const newTranslations = {};
         Object.keys(textsWithoutCommonTranslations).forEach((key) => {
           newTranslations[key] = existingTranslations[key] || "";
@@ -183,6 +186,13 @@ async function generateTranslations() {
         translationFileContent = appendNewLineAtTheEndOfTranslationFiles
           ? translationFileContent.concat("\n")
           : translationFileContent;
+
+        // if the translation file is in sync, skip it
+        if (translationFileContent === existingTranslationFileContent) {
+          console.info("Info: Translation file already in sync for ", langCode);
+          return;
+        }
+        // update the translation file
         fs.writeFileSync(translationFilePath, translationFileContent);
         console.log(chalk.green.bold("Translation file updated."));
         return;
@@ -268,6 +278,15 @@ function generateModuleFiles(params) {
   moduleFileContent = prettier.format(moduleFileContent, {
     parser: "typescript",
   });
+
+  // if the module file exists, and it's the same as the one we want to write, do nothing
+  if (fs.existsSync(moduleFilePath)) {
+    const existingModuleFileContent = fs.readFileSync(moduleFilePath, "utf8");
+    if (existingModuleFileContent === moduleFileContent) {
+      console.info("Info: Module file already in sync.");
+      return;
+    }
+  }
 
   // write the file
   fs.writeFileSync(moduleFilePath, moduleFileContent);
