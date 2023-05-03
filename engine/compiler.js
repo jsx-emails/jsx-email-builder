@@ -207,7 +207,10 @@ async function runBundle(bundleFileName, prettify = false) {
     const html = `${doctype}\n${global.jsx.output.html.outerHTML}`;
 
     if (prettify) {
-      return { html: prettier.format(html, { parser: "html" }), subject };
+      return {
+        html: prettier.format(html, { parser: "html", printWidth: 5000 }),
+        subject,
+      };
     }
     return { html, subject };
   } catch (error) {
