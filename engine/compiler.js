@@ -144,7 +144,7 @@ async function TranspileAndBundle(entryFileName) {
           console.error(err || stats?.compilation.errors);
           reject(err || new Error(stats?.compilation.errors.join("")));
         } else {
-          console.log("Bundle created successfully!");
+          // todo: log if debug is true: console.log("Bundle created successfully!");
           resolve(stats);
         }
       });

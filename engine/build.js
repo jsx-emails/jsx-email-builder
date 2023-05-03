@@ -26,10 +26,13 @@ async function build() {
       const templateName = path.basename(template, templatesPostfix);
       if (templateName.length > templateNameMaxLength) {
         console.error(
+          "\n",
           chalk.red.bold("Error: "),
           chalk.red(
             `"${templateName}" is too long for a template name(${templateName.length} chars). Max length is ${templateNameMaxLength}.`
-          )
+          ),
+          "\n",
+          "\n"
         );
         process.exit(1);
       }
@@ -42,6 +45,10 @@ async function build() {
   for (let i = 0; i < templates.length; i += chunkSize) {
     templatesChunks = templates.slice(i, i + chunkSize);
     const compilePromises = templatesChunks.map((templateRelativePath) => {
+      console.log(
+        chalk.magenta.bold("Building template: "),
+        chalk.bold(templateRelativePath)
+      );
       const templatePath = path.join(
         process.cwd(),
         templatesDir,
@@ -78,10 +85,16 @@ async function build() {
 
       if (subjectRequired) {
         if (!compileResult.subject) {
-          throw new Error(
-            `Subject is not defined in the template ${templatePath}.\n` +
-              "Hint: you can define the subject in the template by calling `setSubject('A fantastic subject');`"
+          console.error(
+            chalk.red.bold("Error: "),
+            chalk.red("Subject is not defined in the template.\n"),
+            "\n",
+            chalk.bold("Hint: "),
+            "you can define the subject in the template by calling `setSubject('A fantastic subject');`",
+            "\n",
+            "\n"
           );
+          process.exit(1);
         }
         createSubjectTemplate({
           templateDir: path.dirname(htmlAbsolutePath),
@@ -107,11 +120,21 @@ async function build() {
 
         if (subjectRequired) {
           if (!compileResult.localized[lang].subject) {
-            throw new Error(
-              `Subject is not defined in the template ${templatePath} for the language "${lang}".\n` +
-                `Hint: you need to define translations for the subject in your translation file for the language "${lang}".\n` +
-                "Hint: if you already have translations for the subject, check the key name in the translation file."
+            console.error(
+              "\n",
+              chalk.red.bold("Error: "),
+              chalk.red(
+                `Subject is not defined in the template for the language code "${lang}".\n`
+              ),
+              "\n",
+              chalk.bold("Hint 1: "),
+              `you need to define translations for the subject in your translation file for the language code "${lang}".\n`,
+              chalk.bold("Hint 2: "),
+              "if you already have translation for the subject in the translation file, check the translation key. It should be the same as the string passed to `setSubject()` in the template.",
+              "\n",
+              "\n"
             );
+            process.exit(1);
           }
           createSubjectTemplate({
             templateDir: path.dirname(localizedHtmlAbsolutePath),

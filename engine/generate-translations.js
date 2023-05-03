@@ -24,8 +24,14 @@ async function generateTranslations() {
 
   if (languages.length === 0) {
     console.error(
-      chalk.red.bold("Error: No languages specified. \n"),
-      "Hint: Please specify the languages in the config file or pass them as a parameter"
+      "\n",
+      chalk.red.bold("Error: "),
+      chalk.red("No languages specified. \n"),
+      "\n",
+      chalk.bold("Hint: "),
+      "Please specify the languages in the config file or pass them as a parameter\n",
+      "\n",
+      "\n"
     );
     process.exit(1);
   }
@@ -91,7 +97,13 @@ async function generateTranslations() {
     }
 
     if (subjectRequired && !compileResult.subject) {
-      console.error(chalk.red.bold("Subject is not defined for the template"));
+      console.error(
+        "\n",
+        chalk.red.bold("Error: "),
+        chalk.red.bold("Subject is not defined for the template\n"),
+        "\n",
+        "\n"
+      );
       process.exit(1);
     }
 
