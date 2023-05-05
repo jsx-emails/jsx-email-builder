@@ -124,13 +124,13 @@ async function build() {
               "\n",
               chalk.red.bold("Error: "),
               chalk.red(
-                `Subject is not defined in the template for the language code "${lang}".\n`
+                `Couldn't find translation for the subject in the translation file for the language code "${lang}".`
               ),
               "\n",
               chalk.bold("Hint 1: "),
-              `you need to define translations for the subject in your translation file for the language code "${lang}".\n`,
+              `You need to define translations for the subject in your translation file (eg. template-name.${lang}.json)\n`,
               chalk.bold("Hint 2: "),
-              "if you already have translation for the subject in the translation file, check the translation key. It should be the same as the string passed to `setSubject()` in the template.",
+              "If you already have translation for the subject in the translation file, then check the translation key. It should be the same as the string passed to `setSubject()` in the template.",
               "\n",
               "\n"
             );
