@@ -1,14 +1,17 @@
 /**
+ * @typedef {import("webpack").Configuration} WebpackConfig
  * @typedef {Object} WebpackConfigParams
  * @property {string} entry
  * @property {string} outputFilename
  * @property {string} outputPath
  * @property {boolean} [sourceMap]
+ * @property {Object.<string, string>} [alias]
  * @param {WebpackConfigParams} params
- * @returns {import("webpack").Configuration}
+ * @returns {WebpackConfig}
  */
+
 function getConfig(params) {
-  const { entry, outputFilename, outputPath, sourceMap } = params;
+  const { entry, outputFilename, outputPath, sourceMap, alias = {} } = params;
 
   return {
     mode: "development",
@@ -46,6 +49,10 @@ function getConfig(params) {
     },
     resolve: {
       extensions: [".tsx", ".jsx", ".ts", ".js"],
+      alias: {
+        // aliases will be get from jsx-email-builder config file and add to webpack at runtime
+        ...alias,
+      },
     },
     output: {
       filename: outputFilename || "bundle.js",

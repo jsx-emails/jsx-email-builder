@@ -8,6 +8,7 @@ import { setupJsxFactory } from "./jsx-parser.js";
 import { setupI18n } from "./i18n.js";
 import { setupUtils } from "./utils.js";
 import prettier from "prettier";
+import getConfig from "./config.js";
 
 const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
 
@@ -132,11 +133,15 @@ async function TranspileAndBundle(entryFileName) {
     const bundleFileName = "bundle." + uuid() + ".js";
     const outputPath = path.join(process.cwd(), "./dist/.temp/");
     const entryFile = path.join(process.cwd(), "./dist/.temp/", entryFileName);
+    const {
+      templates: { importAliases },
+    } = getConfig();
     const webpackConfigs = getWebpackConfig({
       entry: entryFile,
       outputFilename: bundleFileName,
       sourceMap: false,
       outputPath,
+      alias: importAliases,
     });
     const bundlePromise = new Promise((resolve, reject) => {
       webpack(webpackConfigs, (err, stats) => {

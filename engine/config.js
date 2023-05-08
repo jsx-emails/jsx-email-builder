@@ -32,6 +32,7 @@ function getDefaultConfig() {
       templateNameMaxLength: null,
       subjectRequired: true,
       subjectPostfix: "_subject",
+      importAliases: {},
     },
     translation: {
       languages: [],
