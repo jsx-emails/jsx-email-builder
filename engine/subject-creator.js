@@ -3,13 +3,13 @@ import path from "path";
 import { getConfig } from "./config.js";
 
 export async function createSubjectTemplate(params) {
-  const { templateDir, emailTemplateName, subject } = params;
+  const { destDir, emailTemplateName, subject } = params;
   const {
     templates: { subjectPostfix },
   } = getConfig();
 
   const subjectTemplatePath = path.join(
-    templateDir,
+    destDir,
     emailTemplateName + subjectPostfix + ".html"
   );
 

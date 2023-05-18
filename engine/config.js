@@ -24,6 +24,12 @@ function getConfigPath() {
   return configPath;
 }
 
+export const DEST_TYPES = {
+  SAME_AS_TEMPLATES_DIR: "SAME_AS_TEMPLATES_DIR",
+  ALL_IN_ONE: "ALL_IN_ONE",
+  PER_FIRST_LEVEL_DIR: "PER_FIRST_LEVEL_DIR",
+};
+
 function getDefaultConfig() {
   return {
     templates: {
@@ -33,6 +39,9 @@ function getDefaultConfig() {
       subjectRequired: true,
       subjectPostfix: "_subject",
       importAliases: {},
+    },
+    build: {
+      destDir: DEST_TYPES.SAME_AS_TEMPLATES_DIR,
     },
     translation: {
       languages: [],

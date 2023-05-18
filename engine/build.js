@@ -3,7 +3,7 @@ import path from "path";
 import chalk from "chalk";
 import { getEmailTemplatesList } from "./template-finder.js";
 import { compile, cleanupAll } from "./compiler.js";
-import { getConfig } from "./config.js";
+import { getConfig, DEST_TYPES } from "./config.js";
 import createSubjectTemplate from "./subject-creator.js";
 
 async function build() {
@@ -70,18 +70,9 @@ async function build() {
 
       const defaultLang = languages.find((lang) => lang.default);
       const langDir = defaultLang?.langDir ? defaultLang.code : "";
-      let htmlDir = path.join(
-        process.cwd(),
-        `./dist/${path.dirname(templatePath)}`
-      );
-      if (langDir) {
-        htmlDir = path.join(htmlDir, langDir);
-      }
-      const htmlAbsolutePath = path.join(htmlDir, templateName + ".html");
-      if (!fs.existsSync(htmlDir)) {
-        fs.mkdirSync(htmlDir, { recursive: true });
-      }
-      fs.writeFileSync(htmlAbsolutePath, compileResult.html);
+      const { htmlPath, htmlDir } = getHtmlBuildPath(templatePath, langDir);
+      fs.ensureDirSync(htmlDir);
+      fs.writeFileSync(htmlPath, compileResult.html);
 
       if (subjectRequired) {
         if (!compileResult.subject) {
@@ -97,26 +88,17 @@ async function build() {
           process.exit(1);
         }
         createSubjectTemplate({
-          templateDir: path.dirname(htmlAbsolutePath),
+          destDir: path.dirname(htmlPath),
           emailTemplateName: templateName,
           subject: compileResult.subject,
         });
       }
 
       Object.keys(compileResult.localized).forEach((lang) => {
-        // put the localized html files in a subfolder with the language name:
-        const localizedHtmlRelativePath = templatePath
-          .replace(templatesPostfix, ".html")
-          .replace(/([^/]+)$/, `${lang}/$1`);
-        const localizedHtmlAbsolutePath = path.join(
-          process.cwd(),
-          `./dist/${localizedHtmlRelativePath}`
-        );
-        fs.ensureDirSync(path.dirname(localizedHtmlAbsolutePath));
-        fs.writeFileSync(
-          localizedHtmlAbsolutePath,
-          compileResult.localized[lang].html
-        );
+        const { htmlPath: localizedHtmlPath, htmlDir: localizedHtmlDir } =
+          getHtmlBuildPath(templatePath, lang);
+        fs.ensureDirSync(localizedHtmlDir);
+        fs.writeFileSync(localizedHtmlPath, compileResult.localized[lang].html);
 
         if (subjectRequired) {
           if (!compileResult.localized[lang].subject) {
@@ -137,7 +119,7 @@ async function build() {
             process.exit(1);
           }
           createSubjectTemplate({
-            templateDir: path.dirname(localizedHtmlAbsolutePath),
+            destDir: path.dirname(localizedHtmlPath),
             emailTemplateName: templateName,
             subject: compileResult.localized[lang].subject,
           });
@@ -148,6 +130,30 @@ async function build() {
 
   // 5. cleanup
   cleanupAll();
+}
+
+function getHtmlBuildPath(templatePath, langCode) {
+  const {
+    templates: { templatesPostfix },
+    build: { destDir },
+  } = getConfig();
+
+  const templateName = path.basename(templatePath, templatesPostfix);
+  let htmlDir = path.join(process.cwd(), "./dist");
+
+  if (destDir === DEST_TYPES.PER_FIRST_LEVEL_DIR) {
+    const firstLevelDir = path.dirname(templatePath).split("/")[0];
+    htmlDir = path.join(htmlDir, firstLevelDir);
+  } else if (destDir === DEST_TYPES.SAME_AS_TEMPLATE) {
+    htmlDir = path.join(htmlDir, path.dirname(templatePath));
+  }
+
+  if (langCode) {
+    htmlDir = path.join(htmlDir, langCode);
+  }
+
+  const htmlPath = path.join(htmlDir, templateName + ".html");
+  return { htmlPath, htmlDir };
 }
 
 export default build;
