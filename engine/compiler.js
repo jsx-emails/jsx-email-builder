@@ -213,7 +213,7 @@ async function runBundle(bundleFileName, prettify = false) {
 
     if (prettify) {
       return {
-        html: prettier.format(html, { parser: "html", printWidth: 5000 }),
+        html: await prettier.format(html, { parser: "html", printWidth: 5000 }),
         subject,
       };
     }
