@@ -10,8 +10,12 @@ function Root() {
             fontSize: 12,
           }}
         >
-          <h1>Lost your password?</h1>
+          <h1>{variable("name")} Lost your password?</h1>
           <p>No worries, we got you covered.</p>
+          <p>
+            {variable("name")}, click the link below to reset your password.
+            {variable("emoji")}
+          </p>
         </div>
       </body>
     </html>

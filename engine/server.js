@@ -14,6 +14,7 @@ import {
 import { watchForChanges } from "./watcher.js";
 import { exceptionToHtml } from "./exception-to-html.js";
 import { getConfig } from "./config.js";
+import injectMocks from "./mocks-injector.js";
 
 function getHttpServer(params) {
   const { app } = params;
@@ -121,6 +122,9 @@ async function handleRequest(context) {
     if (!req.query.patch) {
       html = injectClientSocketScript({ html: result.html });
     }
+
+    html = injectMocks(html);
+
     res.send(html);
   } catch (e) {
     console.log(e);
