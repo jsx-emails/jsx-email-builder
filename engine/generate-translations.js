@@ -225,7 +225,7 @@ async function generateTranslations() {
 
     // 4. create the module file
     if (createModuleFiles) {
-      generateModuleFiles({
+      await generateModuleFiles({
         distDir,
         templateName,
         languages,
@@ -248,7 +248,7 @@ async function generateTranslations() {
  * @param {boolean} params.languages[].default
  * @param {boolean} params.languages[].disableTranslations
  */
-function generateModuleFiles(params) {
+async function generateModuleFiles(params) {
   const { distDir, templateName, languages } = params;
   const moduleFileName = `${templateName}.ts`;
   const moduleFilePath = path.join(distDir, moduleFileName);
@@ -287,7 +287,7 @@ function generateModuleFiles(params) {
   );
 
   // format the file
-  moduleFileContent = prettier.format(moduleFileContent, {
+  moduleFileContent = await prettier.format(moduleFileContent, {
     parser: "typescript",
   });
 
