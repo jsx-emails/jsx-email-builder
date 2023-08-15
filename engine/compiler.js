@@ -19,8 +19,8 @@ const currentDir = path.dirname(url.fileURLToPath(import.meta.url));
  * @param {boolean=} options.compileAllLangs
  * @param {boolean=} options.prettify
  * @param {string=} options.defaultLang
- * @param {Function=} options.transCallback
- * @returns {Promise<{ html: string, subject: string, localized: { [lang: string]: {html: string, subject: string} } }>}
+ * @returns {Promise<CompileResult>}
+ * @typedef {{ html: string, subject: string, localized: { [lang: string]: {html: string, subject: string} }, texts: string[] }} CompileResult
  */
 export async function compile(options) {
   const {
@@ -29,10 +29,10 @@ export async function compile(options) {
     compileAllLangs = false,
     prettify = false,
     defaultLang = "en",
-    transCallback,
   } = options;
 
-  const result = { html: "", subject: "", localized: {} };
+  /** @type {CompileResult} */
+  const result = {};
   let entryFileName;
   let bundleFileName;
   let i18next;
@@ -50,9 +50,17 @@ export async function compile(options) {
     setupJsxFactory();
 
     // 5. setup the i18n methods if i18n is enabled
+    const texts = [];
     if (i18nEnabled) {
-      i18next = setupI18n({ lng: defaultLang, transCallback });
+      i18next = setupI18n({
+        lng: defaultLang,
+        transCallback: (text) => {
+          texts.push(text);
+          return text;
+        },
+      });
     }
+    result.texts = texts;
 
     // 6. setup the utils methods
     setupUtils();

@@ -79,18 +79,17 @@ async function generateTranslations() {
       templatesDir,
       templateRelativePath,
     );
-    const texts = {};
     const compileResult = await compile({
       templatePath,
       i18nEnabled: true, // TODO: make it configurable
       compileAllLangs: false,
-      transCallback: (text) => {
-        texts[text] = translationKeyAsDefaultValue ? text : "";
-        return text;
-      },
     });
 
     // 3. generate and update the translation files
+    const texts = {};
+    compileResult.texts.map(
+      (text) => (texts[text] = translationKeyAsDefaultValue ? text : ""),
+    );
     if (Object.keys(texts).length === 0) {
       console.warn(chalk.yellow.bold("No texts for translation found!"));
       return;
