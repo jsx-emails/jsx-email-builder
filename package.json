@@ -3,6 +3,7 @@
   "version": "0.22.0",
   "description": "A jsx email template builder. Supper easy and fast.",
   "type": "module",
+  "main": "engine/api.js",
   "scripts": {
     "new": "node engine/cli.js new new-project --templatesDir templates",
     "start": "nodemon engine/cli.js start --port 4000 --templatesDir ./new-project-template/email-templates --configDir ./new-project-template",
