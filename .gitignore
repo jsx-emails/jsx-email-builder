@@ -2,3 +2,4 @@
 **/node_modules/**
 **/dist/**
 /new-project-template/yarn.lock
+yarn-error.log
