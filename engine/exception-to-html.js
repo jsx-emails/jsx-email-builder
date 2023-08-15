@@ -2,7 +2,7 @@ export function exceptionToHtml(e) {
   let message = e.message.replace(/\n/, "<br />");
   message = message.replace(
     /'([./].*?)'/g,
-    "<span class=\"string\">'$1'</span>"
+    "<span class=\"string\">'$1'</span>",
   );
   const stackWithoutMessage = e.stack?.replace(e.message, "");
 

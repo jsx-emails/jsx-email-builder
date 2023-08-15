@@ -18,7 +18,7 @@ function getConfigPath() {
   const configPath = path.join(
     process.cwd(),
     configDir,
-    "./jsx-email-builder.json"
+    "./jsx-email-builder.json",
   );
 
   return configPath;

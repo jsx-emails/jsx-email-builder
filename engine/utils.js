@@ -20,7 +20,7 @@ function html(input) {
       "JSX components are not allowed in html function.\n" +
         "input was: " +
         input +
-        "\n"
+        "\n",
     );
   }
   return new global.jsx.JsxObject({ __html: input });
@@ -43,20 +43,20 @@ function setSubject(input) {
   // }
   if (typeof translatedSubject !== "string") {
     throw new Error(
-      "Subject must be a string. Instead got: " + translatedSubject
+      "Subject must be a string. Instead got: " + translatedSubject,
     );
   }
   if (translatedSubject.length > 255) {
     throw new Error(
       "Subject must be less than 255 characters. Instead got: " +
-        translatedSubject.length
+        translatedSubject.length,
     );
   }
 
   const invalidCharacters = /[\n\r\t\0\b]/;
   if (invalidCharacters.test(translatedSubject)) {
     throw new Error(
-      "Subject must not contain any of the following characters: \\n \\r \\t \\0 \\b"
+      "Subject must not contain any of the following characters: \\n \\r \\t \\0 \\b",
     );
   }
 
@@ -72,7 +72,7 @@ function addInternalStyles(...styles) {
   for (const style of styles) {
     if (typeof style !== "string") {
       throw new Error(
-        "addInternalStyles only accepts strings. Instead got: " + style
+        "addInternalStyles only accepts strings. Instead got: " + style,
       );
     }
     global.outputs.internalStyles.add(style);

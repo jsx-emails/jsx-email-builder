@@ -10,7 +10,7 @@ export async function createSubjectTemplate(params) {
 
   const subjectTemplatePath = path.join(
     destDir,
-    emailTemplateName + subjectPostfix + ".html"
+    emailTemplateName + subjectPostfix + ".html",
   );
 
   fs.ensureDirSync(path.dirname(subjectTemplatePath));

@@ -10,17 +10,17 @@ export function initializeNewProject(params) {
   const targetRootDir = path.join(
     process.cwd(),
     params.projectDir || "",
-    projectName
+    projectName,
   );
   const targetTemplatesDir = path.join(
     targetRootDir,
-    params.templatesDir || "email-templates"
+    params.templatesDir || "email-templates",
   );
 
   // If the target directory already exists, throw an error
   if (fs.existsSync(targetRootDir)) {
     console.error(
-      `[JSX-Email-Builder] error: The directory ${targetRootDir} already exists. You may already have run this command.`
+      `[JSX-Email-Builder] error: The directory ${targetRootDir} already exists. You may already have run this command.`,
     );
     return;
   }

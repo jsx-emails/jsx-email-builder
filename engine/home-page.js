@@ -104,7 +104,7 @@ export function registerHomeRoute(params) {
                         // remove last folder from route
                         templateName = templateName.replace(
                           /[/]?([^/]+\/)([^/]+)$/,
-                          "$2"
+                          "$2",
                         );
                       }
                       templateName = templateName.replace(/[-_]/g, " ");
@@ -114,7 +114,7 @@ export function registerHomeRoute(params) {
                         /\w\S*/g,
                         (txt) =>
                           txt.charAt(0).toUpperCase() +
-                          txt.substring(1).toLowerCase()
+                          txt.substring(1).toLowerCase(),
                       );
 
                       return `<li><a href="${

@@ -21,11 +21,11 @@ export function injectClientSocketScript(params) {
   const { html } = params;
   const socketClient = fs.readFileSync(
     path.join(currentDir, "socket-client.js"),
-    "utf8"
+    "utf8",
   );
   const finalHtml = html.replace(
     "</head>",
-    `<script>${socketClient}</script></head>`
+    `<script>${socketClient}</script></head>`,
   );
   return finalHtml;
 }

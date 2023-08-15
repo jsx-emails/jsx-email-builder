@@ -27,24 +27,24 @@ function getHttpServer(params) {
 
   if (!serverConfig.httpsKeyPath) {
     throw new Error(
-      "'httpsKeyPath' is required. Please add it to the jsx-email-builder.json file"
+      "'httpsKeyPath' is required. Please add it to the jsx-email-builder.json file",
     );
   }
   if (!serverConfig.httpsCertPath) {
     throw new Error(
-      "'httpsCertPath' is required.  Please add it to the jsx-email-builder.json file"
+      "'httpsCertPath' is required.  Please add it to the jsx-email-builder.json file",
     );
   }
   const httpsKeyPath = path.join(process.cwd(), serverConfig.httpsKeyPath);
   const httpsCertPath = path.join(process.cwd(), serverConfig.httpsCertPath);
   if (!fs.existsSync(httpsKeyPath)) {
     throw new Error(
-      `The file specified in 'httpsKeyPath' doesn't exist: ${serverConfig.httpsKeyPath}`
+      `The file specified in 'httpsKeyPath' doesn't exist: ${serverConfig.httpsKeyPath}`,
     );
   }
   if (!fs.existsSync(httpsCertPath)) {
     throw new Error(
-      `The file specified in 'httpsCertPath' doesn't exist: ${serverConfig.httpsCertPath}`
+      `The file specified in 'httpsCertPath' doesn't exist: ${serverConfig.httpsCertPath}`,
     );
   }
   const httpServer = https.createServer(
@@ -52,7 +52,7 @@ function getHttpServer(params) {
       key: fs.readFileSync(httpsKeyPath),
       cert: fs.readFileSync(httpsCertPath),
     },
-    app
+    app,
   );
   return httpServer;
 }
@@ -74,7 +74,7 @@ async function startServer() {
       templatesPostfix,
       httpServer: app,
     },
-    handleRequest
+    handleRequest,
   );
 
   registerHomeRoute({

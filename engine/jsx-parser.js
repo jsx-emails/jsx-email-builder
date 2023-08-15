@@ -182,7 +182,7 @@ function createElementFromHtmlComment(props, children) {
   if (props.condition) {
     let childString;
     const childrenAreString = children.every(
-      (child) => typeof child === "string"
+      (child) => typeof child === "string",
     );
     if (childrenAreString) {
       childString = children.join("");
@@ -197,16 +197,16 @@ function createElementFromHtmlComment(props, children) {
     if (!childString) {
       console.warn(
         "A conditional comment without content found! condition:",
-        props.condition
+        props.condition,
       );
     }
     if (props.alt) {
       return document.createComment(
-        `[if ${props.condition}]><!-->\n${childString}\n<!--<![endif]`
+        `[if ${props.condition}]><!-->\n${childString}\n<!--<![endif]`,
       );
     }
     return document.createComment(
-      `[if ${props.condition}]>\n${childString}\n<![endif]`
+      `[if ${props.condition}]>\n${childString}\n<![endif]`,
     );
   }
 
@@ -259,14 +259,14 @@ function translateChildren(element) {
     (match) => {
       return match.replace(/<[^>]*>/, (match) => {
         const originalMatch = element.innerHTML.match(
-          new RegExp(`<[^>]*${match.replace(/<|>/g, "")}[^>]*>`)
+          new RegExp(`<[^>]*${match.replace(/<|>/g, "")}[^>]*>`),
         );
         if (originalMatch) {
           return originalMatch[0];
         }
         return match;
       });
-    }
+    },
   );
 
   // replace child nodes with translated content

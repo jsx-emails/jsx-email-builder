@@ -29,10 +29,10 @@ async function build() {
           "\n",
           chalk.red.bold("Error: "),
           chalk.red(
-            `"${templateName}" is too long for a template name(${templateName.length} chars). Max length is ${templateNameMaxLength}.`
+            `"${templateName}" is too long for a template name(${templateName.length} chars). Max length is ${templateNameMaxLength}.`,
           ),
           "\n",
-          "\n"
+          "\n",
         );
         process.exit(1);
       }
@@ -47,12 +47,12 @@ async function build() {
     const compilePromises = templatesChunks.map((templateRelativePath) => {
       console.log(
         chalk.magenta.bold("Building template: "),
-        chalk.bold(templateRelativePath)
+        chalk.bold(templateRelativePath),
       );
       const templatePath = path.join(
         process.cwd(),
         templatesDir,
-        templateRelativePath
+        templateRelativePath,
       );
       return compile({
         templatePath,
@@ -83,7 +83,7 @@ async function build() {
             chalk.bold("Hint: "),
             "you can define the subject in the template by calling `setSubject('A fantastic subject');`",
             "\n",
-            "\n"
+            "\n",
           );
           process.exit(1);
         }
@@ -106,7 +106,7 @@ async function build() {
               "\n",
               chalk.red.bold("Error: "),
               chalk.red(
-                `Couldn't find translation for the subject in the translation file for the language code "${lang}".`
+                `Couldn't find translation for the subject in the translation file for the language code "${lang}".`,
               ),
               "\n",
               chalk.bold("Hint 1: "),
@@ -114,7 +114,7 @@ async function build() {
               chalk.bold("Hint 2: "),
               "If you already have translation for the subject in the translation file, then check the translation key. It should be the same as the string passed to `setSubject()` in the template.",
               "\n",
-              "\n"
+              "\n",
             );
             process.exit(1);
           }

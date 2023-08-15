@@ -31,17 +31,17 @@ async function generateTranslations() {
       chalk.bold("Hint: "),
       "Please specify the languages in the config file or pass them as a parameter\n",
       "\n",
-      "\n"
+      "\n",
     );
     process.exit(1);
   }
 
   const languagesToTranslate = languages.filter(
-    (language) => !language.disableTranslations
+    (language) => !language.disableTranslations,
   );
   if (languagesToTranslate.length === 0) {
     console.info(
-      chalk.yellow.bold("Translations are disabled for all languages.")
+      chalk.yellow.bold("Translations are disabled for all languages."),
     );
     return;
   }
@@ -50,7 +50,7 @@ async function generateTranslations() {
     console.warn(
       chalk.yellow.bold("Warning: "),
       "If you have existing translation files, they will be overwritten.",
-      "Do you want to continue? (y/n)"
+      "Do you want to continue? (y/n)",
     );
     const answer = await new Promise((resolve) => {
       process.stdin.once("data", (data) => {
@@ -72,12 +72,12 @@ async function generateTranslations() {
   for (const templateRelativePath of templates) {
     console.log(
       chalk.magenta.bold("Processing template: "),
-      chalk.bold(templateRelativePath)
+      chalk.bold(templateRelativePath),
     );
     const templatePath = path.join(
       process.cwd(),
       templatesDir,
-      templateRelativePath
+      templateRelativePath,
     );
     const texts = {};
     const compileResult = await compile({
@@ -102,7 +102,7 @@ async function generateTranslations() {
         chalk.red.bold("Error: "),
         chalk.red.bold("Subject is not defined for the template\n"),
         "\n",
-        "\n"
+        "\n",
       );
       process.exit(1);
     }
@@ -113,7 +113,7 @@ async function generateTranslations() {
       for (const commonTranslationsDir of commonTranslationsDirs) {
         const commonTranslationsDirPath = path.join(
           process.cwd(),
-          commonTranslationsDir
+          commonTranslationsDir,
         );
         if (fs.existsSync(commonTranslationsDirPath)) {
           const commonTranslationsFile = fs
@@ -122,20 +122,20 @@ async function generateTranslations() {
           if (!commonTranslationsFile) {
             console.warn(
               chalk.yellow.bold("Warning:"),
-              `No translation file found in '${commonTranslationsDirPath}' while looking for common translations.`
+              `No translation file found in '${commonTranslationsDirPath}' while looking for common translations.`,
             );
             continue;
           }
           const commonTranslationsFilePath = path.join(
             commonTranslationsDirPath,
-            commonTranslationsFile
+            commonTranslationsFile,
           );
           const commonTranslationsFileContent = fs.readFileSync(
             commonTranslationsFilePath,
-            "utf8"
+            "utf8",
           );
           const commonTranslationsFileContentParsed = JSON.parse(
-            commonTranslationsFileContent
+            commonTranslationsFileContent,
           );
           Object.keys(commonTranslationsFileContentParsed).forEach((key) => {
             commonTranslations[key] = true;
@@ -152,7 +152,7 @@ async function generateTranslations() {
       process.cwd(),
       templatesDir,
       path.dirname(templateRelativePath),
-      translationsDir
+      translationsDir,
     );
     if (!fs.existsSync(distDir)) {
       fs.mkdirSync(distDir, { recursive: true });
@@ -165,7 +165,7 @@ async function generateTranslations() {
           console.info(
             `Info: Translations are disabled for ${
               language.name || language.code
-            }`
+            }`,
           );
         }
         return;
@@ -178,7 +178,7 @@ async function generateTranslations() {
       if (fs.existsSync(translationFilePath)) {
         const existingTranslationFileContent = fs.readFileSync(
           translationFilePath,
-          "utf8"
+          "utf8",
         );
         const existingTranslations = JSON.parse(existingTranslationFileContent);
         const newTranslations = {};
@@ -188,7 +188,7 @@ async function generateTranslations() {
         if (keepUnmatchedTranslations) {
           const unmatchedTranslations = omit(
             existingTranslations,
-            Object.keys(textsWithoutCommonTranslations)
+            Object.keys(textsWithoutCommonTranslations),
           );
           Object.keys(unmatchedTranslations).forEach((key) => {
             newTranslations[key] = existingTranslations[key];
@@ -219,7 +219,7 @@ async function generateTranslations() {
       fs.writeFileSync(translationFilePath, translationFileContent);
       console.log(
         chalk.green.bold("Translation file created: "),
-        translationFilePath
+        translationFilePath,
       );
     });
 
@@ -262,7 +262,7 @@ function generateModuleFiles(params) {
       const langCode = language.code;
       const translationFileName = `${templateName}.${langCode}.json`;
       const langCodeAsVariable = langCode.replace(/-([a-z])/g, (g) =>
-        g[1].toUpperCase()
+        g[1].toUpperCase(),
       );
       return `import ${langCodeAsVariable} from "./${translationFileName}";`;
     })
@@ -279,11 +279,11 @@ function generateModuleFiles(params) {
             }
             const langCode = language.code;
             const langCodeAsVariable = langCode.replace(/-([a-z])/g, (g) =>
-              g[1].toUpperCase()
+              g[1].toUpperCase(),
             );
             return `${langCodeAsVariable},`;
           })
-          .join("\n")}\n} as TranslationGroup;\n`
+          .join("\n")}\n} as TranslationGroup;\n`,
   );
 
   // format the file
