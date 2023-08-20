@@ -53,26 +53,36 @@ npx jsx-email-builder@latest init my-project
 Or optionally, you can specify the project directory and the templates directory:
 
 ```bash
-npx jsx-email-builder init my-project --projectDir ../projects --templatesDir templates
+npx jsx-email-builder@latest init my-project --projectDir ../projects --templatesDir templates
 ```
 
 aliases: `new`, `create`
 
 This will create a new project in the `my-project` directory. It will also create a `templates` directory with some example templates. Feel free to delete or modify these templates.
 
+Now it's time to install the dependencies:
+
+```bash
+npm install
+```
+
+or
+
+```bash
+yarn install
+```
+
 ## Run your project
 
 ```bash
-npm run dev
+npm run start
 ```
 
 Or using yarn:
 
 ```bash
-yarn dev
+yarn start
 ```
-
-aliases: `start`, `serve`
 
 This will start a development server that will watch your templates and recompile them when they change. By default, it will run on port 3000, but you can change this by passing the `--port` flag. To view your templates, go to `http://localhost:3000/` in your browser.
 
@@ -87,7 +97,5 @@ Or using yarn:
 ```bash
 yarn build
 ```
-
-aliases: `compile`
 
 This will compile all of your JSX email templates into HTML files.
