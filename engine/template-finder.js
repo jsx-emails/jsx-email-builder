@@ -12,6 +12,11 @@ export function getEmailTemplatesList() {
   const result = [];
 
   function traverseDir(dirPath) {
+    if (!fs.existsSync(dirPath)) {
+      console.error(`[Template Finder]: Directory ${dirPath} does not exist`);
+      return [];
+    }
+
     const files = fs.readdirSync(dirPath);
     // filter files that end with templatesPostfix (e.g .template.tsx)
     const templateFiles = files.filter((file) =>
