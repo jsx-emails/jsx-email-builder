@@ -35,7 +35,8 @@ function printVersion() {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
-  switch (args?._?.[0]) {
+  const command = args._?.[0];
+  switch (command) {
     case "help":
       printHelp();
       break;
@@ -68,7 +69,9 @@ async function main() {
       process.exit(1);
       break;
     default:
-      logger.error("[JSX-Email-Builder] error: Unknown command");
+      logger.error(
+        `[JSX-Email-Builder] error: Unknown command: "${command}" \nSee 'jsx-email-builder help'`,
+      );
       process.exit(1);
   }
 }

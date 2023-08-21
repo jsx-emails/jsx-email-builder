@@ -7,7 +7,7 @@ import { getConfig } from "./config.js";
 import chalk from "chalk";
 import { omit } from "lodash-es";
 
-async function generateTranslations() {
+async function generateTranslations(translations) {
   const {
     templates: { templatesDir, templatesPostfix, subjectRequired },
     translation: {
@@ -182,7 +182,18 @@ async function generateTranslations() {
         const existingTranslations = JSON.parse(existingTranslationFileContent);
         const newTranslations = {};
         Object.keys(textsWithoutCommonTranslations).forEach((key) => {
-          newTranslations[key] = existingTranslations[key] || "";
+          if (translations) {
+            newTranslations[key] = translations[key]?.[langCode] || "";
+            if (newTranslations[key] === "") {
+              console.warn(
+                chalk.yellow.bold("Warning:"),
+                chalk.bold("No translation found for:\n") +
+                  `\ttext: "${key}"\n\tlang: "${langCode}"`,
+              );
+            }
+          } else {
+            newTranslations[key] = existingTranslations[key] || "";
+          }
         });
         if (keepUnmatchedTranslations) {
           const unmatchedTranslations = omit(
@@ -205,13 +216,28 @@ async function generateTranslations() {
         }
         // update the translation file
         fs.writeFileSync(translationFilePath, translationFileContent);
-        console.log(chalk.green.bold("Translation file updated."));
+        console.log(
+          chalk.green.bold("Translation file updated for language: ", langCode),
+        );
         return;
       }
 
       // if the translation file doesn't exist, create it
+      let newTranslations = textsWithoutCommonTranslations;
+      if (translations) {
+        Object.keys(textsWithoutCommonTranslations).forEach((key) => {
+          newTranslations[key] = translations[key][langCode] || "";
+          if (newTranslations[key] === "") {
+            console.warn(
+              chalk.yellow.bold("Warning:"),
+              chalk.bold("No translation found for:\n") +
+                `\ttext: "${key}"\n\tlang: "${langCode}"`,
+            );
+          }
+        });
+      }
       let translationFileContent =
-        JSON.stringify(textsWithoutCommonTranslations, null, 2) + "\n";
+        JSON.stringify(newTranslations, null, 2) + "\n";
       translationFileContent = appendNewLineAtTheEndOfTranslationFiles
         ? translationFileContent.concat("\n")
         : translationFileContent;

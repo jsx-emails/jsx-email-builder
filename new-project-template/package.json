@@ -6,13 +6,13 @@
   "scripts": {
     "start": "jsx-email-builder start",
     "build": "jsx-email-builder build",
-    "gen-trans": "jsx-email-builder gen-tans"
+    "gen-trans": "jsx-email-builder gen-trans"
   },
   "keywords": [
     "email templates"
   ],
   "devDependencies": {
-    "jsx-email-builder": "~0.22.0"
+    "jsx-email-builder": "^1.1.0"
   },
   "private": true
 }
