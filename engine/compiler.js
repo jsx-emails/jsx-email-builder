@@ -269,5 +269,10 @@ export function cleanupAll() {
     return;
   }
   const tempDir = path.join(process.cwd(), "./dist/.temp");
+
+  if (!fs.existsSync(tempDir)) {
+    return;
+  }
+
   fs.rmSync(tempDir, { recursive: true });
 }
