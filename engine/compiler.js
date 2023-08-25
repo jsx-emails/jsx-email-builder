@@ -33,6 +33,7 @@ export async function compile(options) {
 
   /** @type {CompileResult} */
   const result = {};
+  result.localized = {};
   let entryFileName;
   let bundleFileName;
   let i18next;
