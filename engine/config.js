@@ -5,6 +5,8 @@ import { merge } from "lodash-es";
 
 const args = parseArgs(process.argv.slice(2));
 
+export const DEFAULT_FILTER = "**/*";
+
 export function getConfig() {
   const defaultConfig = getDefaultConfig();
   const configFile = overrideWithConfigFile(defaultConfig);
@@ -35,6 +37,7 @@ function getDefaultConfig() {
     templates: {
       templatesDir: "./email-templates",
       templatesPostfix: ".template.tsx",
+      filter: DEFAULT_FILTER,
       templateNameMaxLength: null,
       subjectRequired: true,
       subjectPostfix: "_subject",
