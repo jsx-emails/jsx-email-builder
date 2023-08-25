@@ -29,5 +29,13 @@ export function getEmailTemplatesList() {
     .reverse()
     .map((file) => path.sep + file);
 
+  if (templateFiles.length === 0) {
+    console.log(
+      chalk.redBright.bold(
+        `[Template Finder]: No templates found in "${templatesDir}" directory. Please check your configuration and filter.`,
+      ),
+    );
+  }
+
   return templateFiles;
 }
