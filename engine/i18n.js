@@ -12,7 +12,12 @@ export function setupI18n(params) {
     },
   });
 
-  global.trans = transCallback || trans;
+  global.trans = (...params) => {
+    if (transCallback) {
+      return transCallback?.(trans(...params));
+    }
+    return trans(...params);
+  };
   global.addTrans = addTrans;
 
   return i18next;
