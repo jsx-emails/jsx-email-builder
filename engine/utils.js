@@ -30,8 +30,20 @@ global.html = html;
 /******************************************************
  * Subject utils
  * ***************************************************/
-function setSubject(input) {
-  const translatedSubject = global.trans(input);
+function setSubject(input, options) {
+  const { separator = " " } = options || {};
+  // if array, join with separator
+  let translatedSubject;
+  if (Array.isArray(input)) {
+    translatedSubject = input.reduce((acc, curr) => {
+      if (acc) {
+        acc += separator;
+      }
+      return acc + global.trans(curr);
+    }, "");
+  } else {
+    translatedSubject = global.trans(input);
+  }
   // if (global.outputs?.subject) {
   //   throw new Error(
   //     "Subject is already set to: " +
