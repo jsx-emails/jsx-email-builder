@@ -106,6 +106,15 @@ function appendChildren(element, children, insideAChild = false) {
         //   child.trans?.text,
         //   child.trans.options
         // );
+        console.error(
+          "Unimplemented code. Please report this issue.",
+          "child is instanceof Object:\n\t" + child,
+        );
+      } else {
+        console.error(
+          "Unexpected child. Please report this issue.",
+          "child:\n\t" + child,
+        );
       }
     });
   } else if (typeof children === "string") {
@@ -222,55 +231,70 @@ function translateChildren(element) {
     return;
   }
 
-  let text = element.innerHTML;
+  let innerHTML = element.innerHTML;
 
   // if &nbsp; then skip translation
-  if (text === "&nbsp;") {
-    return;
-  }
-  // if includes tags other than b, i, a tags, then skip translation
-  if (text.match(/<([^bia/]|[bia][^ >])/)) {
-    return;
-  }
-  // if after removing all variables, the text doesn't include any letters, then skip translation
-  // todo: this won't work with non-english languages
-  if (!text.replace(/{{[^}]*}}/g, "").match(/[a-zA-Z]/)) {
+  if (innerHTML === "&nbsp;") {
     return;
   }
 
-  // remove extra spaces and new lines
-  text = text
-    .replace(/[\r\n]+/g, " ")
-    .replace(/\s\s+/g, " ")
-    .trim();
-  // remove all attributes from tags but keep the content and tags
-  text = text.replace(/<[^>]*>/g, (match) => {
-    return match.replace(/<[^>]*>/, (match) => {
-      return match.replace(/ [^=]+="[^"]*"/g, "");
-    });
-  });
+  // if includes tags other than `b`, `i`, `a`, and `br` tags, then skip translation.
+  // translations should be applied to tags that only have text content and `b`, `i`, `a`, and `br` tags
+  if (
+    innerHTML.match(/<[^>]*>/g)?.some((tag) => {
+      return !tag.match(/<[/]?([bia]|br)([ ]*>|\s[^>]*>)/g);
+    })
+  ) {
+    return;
+  }
 
-  // translate text
-  const translatedText = global.trans(text);
+  // split text by br tags to be able to translate each line separately
+  const textParts = innerHTML.split(/<br[ /]*>/g);
 
-  // add back removed attributes to text using the original element inner html
-  const translatedChildrenString = translatedText.replace(
-    /<[^>]*>/g,
-    (match) => {
+  let translatedChildrenArray = [];
+  for (let text of textParts) {
+    // if after removing all variables, the text doesn't include any letters, then skip translation
+    // todo: this won't work with non-english languages
+    if (!text.replace(/{{[^}]*}}/g, "").match(/[a-zA-Z]/)) {
+      return;
+    }
+
+    // remove extra spaces and new lines
+    text = text
+      .replace(/[\r\n]+/g, " ")
+      .replace(/\s\s+/g, " ")
+      .trim();
+    // remove all attributes from tags but keep the content and tags
+    text = text.replace(/<[^>]*>/g, (match) => {
       return match.replace(/<[^>]*>/, (match) => {
-        const originalMatch = element.innerHTML.match(
-          new RegExp(`<[^>]*${match.replace(/<|>/g, "")}[^>]*>`),
-        );
-        if (originalMatch) {
-          return originalMatch[0];
-        }
-        return match;
+        return match.replace(/ [^=]+="[^"]*"/g, "");
       });
-    },
-  );
+    });
+
+    // translate text
+    const translatedText = global.trans(text);
+
+    // add back removed attributes to text using the original element inner html
+    const translatedChildrenString = translatedText.replace(
+      /<[^>]*>/g,
+      (match) => {
+        return match.replace(/<[^>]*>/, (match) => {
+          const originalMatch = element.innerHTML.match(
+            new RegExp(`<[^>]*${match.replace(/<|>/g, "")}[^>]*>`),
+          );
+          if (originalMatch) {
+            return originalMatch[0];
+          }
+          return match;
+        });
+      },
+    );
+
+    translatedChildrenArray.push(translatedChildrenString);
+  }
 
   // replace child nodes with translated content
-  element.innerHTML = translatedChildrenString;
+  element.innerHTML = translatedChildrenArray.join("<br />");
 }
 
 function JsxObject(input) {
