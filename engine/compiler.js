@@ -74,13 +74,13 @@ export async function compile(options) {
     // 8. if compileAllLangs, run the transpiled code again for each language
     if (i18nEnabled && compileAllLangs && i18next) {
       const languages = Object.keys(i18next.services.resourceStore.data).filter(
-        (lang) => lang !== defaultLang
+        (lang) => lang !== defaultLang,
       );
       for (const lang of languages) {
         await i18next.changeLanguage(lang);
         const { html, subject } = await runBundle(
           bundleFileName + "?lang=" + lang,
-          prettify
+          prettify,
         );
         result.localized[lang] = { html, subject };
       }
@@ -120,7 +120,7 @@ function createEntryFile(templatePath) {
     const entryFileTemplateContent = fs.readFileSync(entryFileTemplate, "utf8");
     const entryFileContent = entryFileTemplateContent.replace(
       /{{templatePath}}/g,
-      templatePath
+      templatePath,
     );
     fs.writeFileSync(entryFile, entryFileContent);
 
@@ -183,7 +183,7 @@ async function runBundle(bundleFileName, prettify = false) {
   try {
     const jsFilePath = path.join(
       process.cwd(),
-      `./dist/.temp/${bundleFileName}`
+      `./dist/.temp/${bundleFileName}`,
     );
 
     await import(jsFilePath);

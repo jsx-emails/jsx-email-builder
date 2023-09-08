@@ -42,8 +42,8 @@ async function generateTranslations(translations) {
   if (languagesToTranslate.length === 0) {
     console.info(
       chalk.yellow.bold(
-        "Warning: Translations are disabled for all languages. As a result, no translation files will be generated."
-      )
+        "Warning: Translations are disabled for all languages. As a result, no translation files will be generated.",
+      ),
     );
     return;
   }

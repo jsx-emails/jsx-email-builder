@@ -15,8 +15,8 @@ export function getEmailTemplatesList() {
     console.log(
       chalk.blueBright.bold("[Template Finder]: "),
       chalk.blueBright(
-        `Templates filtered by "${filter}${templatesPostfix}" glob.`
-      )
+        `Templates filtered by "${filter}${templatesPostfix}" glob.`,
+      ),
     );
   }
 

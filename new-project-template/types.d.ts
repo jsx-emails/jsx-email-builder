@@ -23,7 +23,7 @@ interface JsxElement<
   P = any,
   T extends string | JSXElementConstructor<any> =
     | string
-    | JSXElementConstructor<any>
+    | JSXElementConstructor<any>,
 > {
   type: T;
   props: P;
