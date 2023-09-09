@@ -31,7 +31,35 @@ global.html = html;
  * Subject utils
  * ***************************************************/
 function setSubject(input, options) {
+  // if (global.outputs?.subject) {
+  //   throw new Error(
+  //     "Subject is already set to: " +
+  //       global.outputs.subject +
+  //       ".\n" +
+  //       "You can only set subject once.\n" +
+  //       `More info: got "${input}" as new subject.`
+  //   );
+  // }
+
+  if (typeof input !== "string" && !Array.isArray(input)) {
+    throw new Error(
+      "Subject must be a string or an array of strings. Instead got: " +
+        typeof input,
+    );
+  }
+  global.outputs = {
+    ...global.outputs,
+    subject: input,
+    subjectOptions: options,
+  };
+}
+
+export function translateSubject(input, options) {
   const { separator = " " } = options || {};
+
+  if (!input) {
+    return "";
+  }
   // if array, join with separator
   let translatedSubject;
   if (Array.isArray(input)) {
@@ -44,20 +72,7 @@ function setSubject(input, options) {
   } else {
     translatedSubject = global.trans(input);
   }
-  // if (global.outputs?.subject) {
-  //   throw new Error(
-  //     "Subject is already set to: " +
-  //       global.outputs.subject +
-  //       ".\n" +
-  //       "You can only set subject once.\n" +
-  //       `More info: got "${input}" as new subject.`
-  //   );
-  // }
-  if (typeof translatedSubject !== "string") {
-    throw new Error(
-      "Subject must be a string. Instead got: " + translatedSubject,
-    );
-  }
+
   if (translatedSubject.length > 255) {
     throw new Error(
       "Subject must be less than 255 characters. Instead got: " +
@@ -72,7 +87,7 @@ function setSubject(input, options) {
     );
   }
 
-  global.outputs = { ...global.outputs, subject: translatedSubject };
+  return translatedSubject;
 }
 
 /******************************************************

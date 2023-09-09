@@ -6,7 +6,7 @@ import url from "url";
 import getWebpackConfig from "./webpack-configs.js";
 import { setupJsxFactory } from "./jsx-parser.js";
 import { setupI18n } from "./i18n.js";
-import { setupUtils } from "./utils.js";
+import { setupUtils, translateSubject } from "./utils.js";
 import prettier from "prettier";
 import getConfig from "./config.js";
 
@@ -188,7 +188,10 @@ async function runBundle(bundleFileName, prettify = false) {
 
     await import(jsFilePath);
 
-    const subject = global.outputs?.subject;
+    const subject = translateSubject(
+      global.outputs?.subject,
+      global.outputs?.subjectOptions,
+    );
     const doctype = global.jsx.doctype || "<!DOCTYPE html>";
     const { document } = global.jsx.dom.window;
 

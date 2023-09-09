@@ -20,6 +20,8 @@ export function setupI18n(params) {
   };
   global.addTrans = addTrans;
 
+  global.i18next = i18next;
+
   return i18next;
 }
 
