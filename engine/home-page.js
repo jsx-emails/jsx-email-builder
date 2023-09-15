@@ -103,8 +103,8 @@ export function registerHomeRoute(params) {
                       if (ignoreDirsContainingTemplates) {
                         // remove last folder from route
                         templateName = templateName.replace(
-                          /[/]?([^/]+\/)([^/]+)$/,
-                          "$2",
+                          /([/]?)([^/]+\/)([^/]+)$/,
+                          "$1$3",
                         );
                       }
                       templateName = templateName.replace(/[-_]/g, " ");
