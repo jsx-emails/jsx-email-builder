@@ -39,7 +39,8 @@ export async function registerRoutes(params, callback) {
     });
   });
 
-  console.log("following routes registered:", routes);
+  // todo: log only in debug mode:
+  // console.log("following routes registered:", routes);
   return routes;
 }
 

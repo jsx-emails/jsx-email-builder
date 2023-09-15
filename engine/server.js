@@ -1,3 +1,4 @@
+import chalk from "chalk";
 import express from "express";
 import http from "http";
 import https from "https";
@@ -89,7 +90,10 @@ async function startServer() {
   });
 
   httpServer.listen(port, () => {
-    console.log(`Email templates are served on port ${port}`);
+    console.log("[JSX-Email-Builder] " + chalk.green.bold("Server started"));
+    console.log(
+      `[JSX-Email-Builder] Email templates are served on port ${port}`,
+    );
   });
 }
 
