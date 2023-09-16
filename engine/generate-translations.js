@@ -228,7 +228,7 @@ async function generateTranslations(translations) {
       let newTranslations = textsWithoutCommonTranslations;
       if (translations) {
         Object.keys(textsWithoutCommonTranslations).forEach((key) => {
-          newTranslations[key] = translations[key][langCode] || "";
+          newTranslations[key] = translations[key]?.[langCode] || "";
           if (newTranslations[key] === "") {
             console.warn(
               chalk.yellow.bold("Warning:"),
