@@ -242,8 +242,7 @@ async function generateTranslations(translations) {
             }
           });
       }
-      let translationFileContent =
-        JSON.stringify(newTranslations, null, 2) + "\n";
+      let translationFileContent = JSON.stringify(newTranslations, null, 2);
       translationFileContent = appendNewLineAtTheEndOfTranslationFiles
         ? translationFileContent.concat("\n")
         : translationFileContent;
