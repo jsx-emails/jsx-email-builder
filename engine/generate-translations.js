@@ -187,7 +187,10 @@ async function generateTranslations(translations) {
           .sort((a, b) => a.localeCompare(b))
           .forEach((key) => {
             if (translations) {
-              newTranslations[key] = translations[key]?.[langCode] || "";
+              newTranslations[key] =
+                translations[key]?.[langCode] ||
+                existingTranslations[key] ||
+                "";
               if (newTranslations[key] === "") {
                 console.warn(
                   chalk.yellow.bold("Warning:"),
