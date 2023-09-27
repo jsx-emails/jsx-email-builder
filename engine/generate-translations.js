@@ -89,9 +89,9 @@ async function generateTranslations(translations) {
 
     // 3. generate and update the translation files
     const texts = {};
-    compileResult.texts.map(
-      (text) => (texts[text] = translationKeyAsDefaultValue ? text : ""),
-    );
+    compileResult.texts
+      .sort((a, b) => a.localeCompare(b))
+      .map((text) => (texts[text] = translationKeyAsDefaultValue ? text : ""));
     if (Object.keys(texts).length === 0) {
       console.warn(chalk.yellow.bold("No texts for translation found!"));
       return;
@@ -183,20 +183,22 @@ async function generateTranslations(translations) {
         );
         const existingTranslations = JSON.parse(existingTranslationFileContent);
         const newTranslations = {};
-        Object.keys(textsWithoutCommonTranslations).forEach((key) => {
-          if (translations) {
-            newTranslations[key] = translations[key]?.[langCode] || "";
-            if (newTranslations[key] === "") {
-              console.warn(
-                chalk.yellow.bold("Warning:"),
-                chalk.bold("No translation found for:\n") +
-                  `\ttext: "${key}"\n\tlang: "${langCode}"`,
-              );
+        Object.keys(textsWithoutCommonTranslations)
+          .sort((a, b) => a.localeCompare(b))
+          .forEach((key) => {
+            if (translations) {
+              newTranslations[key] = translations[key]?.[langCode] || "";
+              if (newTranslations[key] === "") {
+                console.warn(
+                  chalk.yellow.bold("Warning:"),
+                  chalk.bold("No translation found for:\n") +
+                    `\ttext: "${key}"\n\tlang: "${langCode}"`,
+                );
+              }
+            } else {
+              newTranslations[key] = existingTranslations[key] || "";
             }
-          } else {
-            newTranslations[key] = existingTranslations[key] || "";
-          }
-        });
+          });
         if (keepUnmatchedTranslations) {
           const unmatchedTranslations = omit(
             existingTranslations,
@@ -227,16 +229,18 @@ async function generateTranslations(translations) {
       // if the translation file doesn't exist, create it
       let newTranslations = textsWithoutCommonTranslations;
       if (translations) {
-        Object.keys(textsWithoutCommonTranslations).forEach((key) => {
-          newTranslations[key] = translations[key]?.[langCode] || "";
-          if (newTranslations[key] === "") {
-            console.warn(
-              chalk.yellow.bold("Warning:"),
-              chalk.bold("No translation found for:\n") +
-                `\ttext: "${key}"\n\tlang: "${langCode}"`,
-            );
-          }
-        });
+        Object.keys(textsWithoutCommonTranslations)
+          .sort((a, b) => a.localeCompare(b))
+          .forEach((key) => {
+            newTranslations[key] = translations[key]?.[langCode] || "";
+            if (newTranslations[key] === "") {
+              console.warn(
+                chalk.yellow.bold("Warning:"),
+                chalk.bold("No translation found for:\n") +
+                  `\ttext: "${key}"\n\tlang: "${langCode}"`,
+              );
+            }
+          });
       }
       let translationFileContent =
         JSON.stringify(newTranslations, null, 2) + "\n";
