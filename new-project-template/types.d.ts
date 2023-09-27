@@ -40,7 +40,13 @@ type JsxFragment = Iterable<JsxChildren>;
 
 declare function variable(name: string): string;
 
-declare function setSubject(name: string | string[]): void;
+type subjectOptions = {
+  separator?: string;
+};
+declare function setSubject(
+  name: string | string[],
+  options?: subjectOptions,
+): void;
 
 declare function addInternalStyles(...styles: string[]): void;
 
