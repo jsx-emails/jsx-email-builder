@@ -107,8 +107,8 @@ function appendChildren(element, children, insideAChild = false) {
         //   child.trans.options
         // );
         console.error(
-          "Unimplemented code. Please report this issue.",
-          "child is instanceof Object:\n\t" + child,
+          "Unsupported child type. We don't support objects as children.\n\t",
+          "Child :\n" + JSON.stringify(child),
         );
       } else {
         console.error(
