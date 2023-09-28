@@ -93,6 +93,11 @@ function overrideWithCliArgs(config) {
     });
   });
 
+  result.cli = {
+    saveMissingTrans: cliArgs.saveMissingTrans,
+    saveMissingTransMinify: cliArgs.saveMissingTransMinify,
+  };
+
   return result;
 }
 

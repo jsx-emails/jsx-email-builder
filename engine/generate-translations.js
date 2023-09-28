@@ -20,6 +20,7 @@ async function generateTranslations(translations) {
       confirmUnmatchedTranslationsRemoval,
       appendNewLineAtTheEndOfTranslationFiles,
     },
+    cli,
   } = getConfig();
 
   if (languages.length === 0) {
@@ -71,6 +72,7 @@ async function generateTranslations(translations) {
 
   // TODO: parallelize this:
   // 2. compile them to get the texts
+  const missingTranslations = new Map();
   for (const templateRelativePath of templates) {
     console.log(
       chalk.magenta.bold("Processing template: "),
@@ -197,6 +199,18 @@ async function generateTranslations(translations) {
                   chalk.bold("No translation found for:\n") +
                     `\ttext: "${key}"\n\tlang: "${langCode}"`,
                 );
+                // push it to list of missing translations
+                if (cli.saveMissingTrans || cli.saveMissingTransMinify) {
+                  if (missingTranslations.has(key)) {
+                    missingTranslations.get(key).langs.add(langCode);
+                    missingTranslations.get(key).templates.add(templateName);
+                  } else {
+                    missingTranslations.set(key, {
+                      langs: new Set([langCode]),
+                      templates: new Set([templateName]),
+                    });
+                  }
+                }
               }
             } else {
               newTranslations[key] = existingTranslations[key] || "";
@@ -242,6 +256,18 @@ async function generateTranslations(translations) {
                 chalk.bold("No translation found for:\n") +
                   `\ttext: "${key}"\n\tlang: "${langCode}"`,
               );
+              // push it to list of missing translations
+              if (cli.saveMissingTrans || cli.saveMissingTransMinify) {
+                if (missingTranslations.has(key)) {
+                  missingTranslations.get(key).langs.add(langCode);
+                  missingTranslations.get(key).templates.add(templateName);
+                } else {
+                  missingTranslations.set(key, {
+                    langs: new Set([langCode]),
+                    templates: new Set([templateName]),
+                  });
+                }
+              }
             }
           });
       }
@@ -266,7 +292,36 @@ async function generateTranslations(translations) {
     }
   }
 
-  // 5. cleanup
+  // 5. save the missing translations to a file
+  if (
+    missingTranslations.size > 0 &&
+    (cli.saveMissingTrans || cli.saveMissingTransMinify)
+  ) {
+    let missingTranslationsFileContent = "";
+    let index = 1;
+    for (const [key, value] of missingTranslations) {
+      let line;
+      if (cli.saveMissingTransMinify) {
+        line = key;
+      } else {
+        line =
+          `Text ${index++}: ${key}` +
+          `\n\tLanguages: "[${Array.from(value.langs).join(", ")}]"` +
+          `\n\tTemplates: "[${Array.from(value.templates).join(", ")}]"`;
+      }
+      missingTranslationsFileContent += line + "\n";
+    }
+    const missingTranslationsFilePath = path.join(
+      process.cwd(),
+      "missing-translations.log",
+    );
+    fs.writeFileSync(
+      missingTranslationsFilePath,
+      missingTranslationsFileContent,
+    );
+  }
+
+  // 6. cleanup
   cleanupAll();
 }
 
