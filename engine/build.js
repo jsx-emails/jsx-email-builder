@@ -149,7 +149,8 @@ function getHtmlBuildPath(templatePath, langCode) {
   }
 
   if (langCode) {
-    htmlDir = path.join(htmlDir, langCode);
+    // TODO: make conversion to lowercase configurable
+    htmlDir = path.join(htmlDir, langCode.toLowerCase());
   }
 
   const htmlPath = path.join(htmlDir, templateName + ".html");

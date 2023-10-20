@@ -39,7 +39,9 @@ function trans(...params) {
 
 function addTrans(resources) {
   Object.keys(resources).forEach((lang) => {
-    const normalizedLang = lang.replace(/([A-Z])/g, "-$1").toLowerCase();
+    const normalizedLang = i18next.services.languageUtils.toResolveHierarchy(
+      lang.replace(/([A-Z])/g, "-$1").toLowerCase(),
+    )[0];
     i18next.addResourceBundle(normalizedLang, "translation", resources[lang]);
   });
 }
