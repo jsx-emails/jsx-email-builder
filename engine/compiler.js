@@ -120,7 +120,7 @@ function createEntryFile(templatePath) {
     const entryFileTemplateContent = fs.readFileSync(entryFileTemplate, "utf8");
     const entryFileContent = entryFileTemplateContent.replace(
       /{{templatePath}}/g,
-      templatePath,
+      templatePath.replaceAll("\\", "\\\\"),
     );
     fs.writeFileSync(entryFile, entryFileContent);
 
@@ -186,7 +186,7 @@ async function runBundle(bundleFileName, prettify = false) {
       `./dist/.temp/${bundleFileName}`,
     );
 
-    await import(jsFilePath);
+    await import("file://" + jsFilePath);
 
     const subject = translateSubject(
       global.outputs?.subject,

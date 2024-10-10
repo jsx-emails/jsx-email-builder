@@ -1,6 +1,5 @@
 import chalk from "chalk";
 import { globSync } from "glob";
-import path from "path";
 import { getConfig, DEFAULT_FILTER } from "./config.js";
 
 /**
@@ -27,7 +26,7 @@ export function getEmailTemplatesList() {
     posix: true,
   })
     .reverse()
-    .map((file) => path.sep + file);
+    .map((file) => "/" + file);
 
   if (templateFiles.length === 0) {
     console.log(

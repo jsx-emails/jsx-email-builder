@@ -14,7 +14,7 @@ export function getRoutesOfTemplates() {
   const routes = [];
   const templatesPaths = getEmailTemplatesList();
   templatesPaths.forEach((templatePath) => {
-    routes.push(templatePath.replace(templatesPostfix, ""));
+    routes.push(templatePath.replace(templatesPostfix, "").replace("\\", "/"));
   });
   return routes;
 }
