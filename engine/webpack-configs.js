@@ -1,3 +1,8 @@
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+const swcLoaderPath = require.resolve("swc-loader");
+
 /**
  * @typedef {import("webpack").Configuration} WebpackConfig
  * @typedef {Object} WebpackConfigParams
@@ -23,7 +28,7 @@ function getConfig(params) {
         {
           test: /\.tsx?$/,
           use: {
-            loader: "swc-loader",
+            loader: swcLoaderPath,
             options: {
               jsc: {
                 parser: {

@@ -1,5 +1,6 @@
 .DS_Store
 **/node_modules/**
 **/dist/**
-/new-project-template/yarn.lock
-yarn-error.log
+/new-project-template/pnpm-lock.yaml
+pnpm-debug.log*
+

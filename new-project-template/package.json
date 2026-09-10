@@ -3,6 +3,7 @@
   "description": "Email templates made by jsx email builder",
   "version": "1.0.0",
   "type": "module",
+  "packageManager": "pnpm@12.3.4",
   "scripts": {
     "start": "jsx-email-builder start",
     "build": "jsx-email-builder build",
@@ -12,7 +13,7 @@
     "email templates"
   ],
   "devDependencies": {
-    "jsx-email-builder": "^1.7.0"
+    "jsx-email-builder": "^2.0.0"
   },
   "private": true
 }

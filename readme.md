@@ -34,26 +34,26 @@ Jsx email builder uses [i18next](https://www.i18next.com/) for translations so a
 
 ## Prerequisites
 
-- Node.js 16 or higher
+- Node.js 24.15
 
   make sure you have the latest version of Node.js installed. You can check your version by running `node -v` in your terminal.
 
-- NPM 8 or higher
+- pnpm 12
 
-  make sure you have the latest version of NPM installed. You can check your version by running `npm -v` in your terminal.
+  Make sure you have pnpm installed. You can check your version by running `pnpm -v` in your terminal.
 
 ## Create a new project
 
 If you don't have a project yet, you can create one by running the following command:
 
 ```bash
-npx jsx-email-builder@latest init my-project
+pnpm dlx jsx-email-builder@latest init my-project
 ```
 
 Or optionally, you can specify the project directory and the templates directory:
 
 ```bash
-npx jsx-email-builder@latest init my-project --projectDir ../projects --templatesDir templates
+pnpm dlx jsx-email-builder@latest init my-project --projectDir ../projects --templatesDir templates
 ```
 
 aliases: `new`, `create`
@@ -63,25 +63,13 @@ This will create a new project in the `my-project` directory. It will also creat
 Now it's time to install the dependencies:
 
 ```bash
-npm install
-```
-
-or
-
-```bash
-yarn install
+pnpm install
 ```
 
 ## Run your project
 
 ```bash
-npm run start
-```
-
-Or using yarn:
-
-```bash
-yarn start
+pnpm start
 ```
 
 This will start a development server that will watch your templates and recompile them when they change. By default, it will run on port 3000, but you can change this by passing the `--port` flag. To view your templates, go to `http://localhost:3000/` in your browser.
@@ -89,13 +77,7 @@ This will start a development server that will watch your templates and recompil
 ## Build your project
 
 ```bash
-npm run build
-```
-
-Or using yarn:
-
-```bash
-yarn build
+pnpm build
 ```
 
 This will compile all of your JSX email templates into HTML files.

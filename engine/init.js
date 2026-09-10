@@ -59,6 +59,17 @@ export function initializeNewProject(params) {
   const targetTypesPath = path.join(targetRootDir, "types.d.ts");
   fs.copySync(typesPath, targetTypesPath);
 
+  // Copy pnpm workspace settings
+  const pnpmWorkspacePath = path.join(
+    projectTemplateDir,
+    "pnpm-workspace.yaml",
+  );
+  const targetPnpmWorkspacePath = path.join(
+    targetRootDir,
+    "pnpm-workspace.yaml",
+  );
+  fs.copySync(pnpmWorkspacePath, targetPnpmWorkspacePath);
+
   // Copy .gitignore
   const gitignorePath = path.join(projectTemplateDir, ".gitignore.template");
   const targetGitignorePath = path.join(targetRootDir, ".gitignore");
